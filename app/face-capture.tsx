@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet, Dimensions, Alert } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { View, Text, TouchableOpacity, Image, StyleSheet, Dimensions, Alert, ActivityIndicator } from 'react-native';
+import { MaterialIcons, AntDesign } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import { useNavigate } from '@/hooks/useNavigation';
+import LoadingIndicator from '@/components/Loading';
 
 const { width } = Dimensions.get('window');
 
 export default function FaceCaptureScreen() {
     const [facePhoto, setFacePhoto] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+
+    const navigate = useNavigate()
 
     const captureFace = async () => {
         setIsLoading(true);
@@ -40,9 +44,16 @@ export default function FaceCaptureScreen() {
         <View style={styles.container}>
             {!facePhoto ? (
                 <View style={styles.captureContainer}>
+                    <Text style={styles.guideText}>CĂN CHỈNH KHUÔN MẶT VÀO KHUNG HÌNH</Text>
                     <View style={styles.guideFrame}>
-                        <View style={styles.faceOutline} />
-                        <Text style={styles.guideText}>Vui lòng để khuôn mặt trong khung oval</Text>
+                        <View style={styles.faceOutline} >
+                            <AntDesign
+                                name="user"
+                                size={120}
+                                color="#007AFF"
+                                style={{ marginBottom: 15 }}
+                            />
+                        </View>
                     </View>
 
                     <TouchableOpacity
@@ -55,7 +66,7 @@ export default function FaceCaptureScreen() {
                         ) : (
                             <>
                                 <MaterialIcons name="photo-camera" size={24} color="white" />
-                                <Text style={styles.buttonText}>CHỤP CHÂN DUNG</Text>
+                                <Text style={styles.buttonText}>TIẾP TỤC</Text>
                             </>
                         )}
                     </TouchableOpacity>
@@ -64,21 +75,14 @@ export default function FaceCaptureScreen() {
                 <View style={styles.previewContainer}>
                     <Image source={{ uri: facePhoto }} style={styles.previewImage} />
 
+                    <LoadingIndicator size={50} color='blue' />
+
                     <View style={styles.actionButtons}>
                         <TouchableOpacity
-                            style={styles.retakeButton}
-                            onPress={() => setFacePhoto(null)}
-                        >
-                            <MaterialIcons name="replay" size={24} color="white" />
-                            <Text style={styles.buttonText}>CHỤP LẠI</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
                             style={styles.confirmButton}
-                            onPress={() => navigation.navigate('NextScreen')}
+                            onPress={() => navigate('register-pin')}
                         >
-                            <MaterialIcons name="check" size={24} color="white" />
-                            <Text style={styles.buttonText}>XÁC NHẬN</Text>
+                            <Text style={styles.buttonText}>TIẾP TỤC</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -115,15 +119,21 @@ const styles = StyleSheet.create({
         borderRadius: (width - 120) / 2,
         borderWidth: 1,
         borderColor: 'rgba(0,122,255,0.5)',
-        borderStyle: 'dashed'
+        borderStyle: 'dashed',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     guideText: {
         position: 'absolute',
-        bottom: -40,
-        fontSize: 16,
+        top: -70,
+        fontSize: 18,
         color: '#333',
+        fontWeight: 'bold',
         textAlign: 'center',
-        width: '80%'
+        width: '70%',
+        paddingTop: 10,
+        paddingBottom: 10,
     },
     captureButton: {
         backgroundColor: '#007AFF',
@@ -165,7 +175,7 @@ const styles = StyleSheet.create({
         gap: 10
     },
     confirmButton: {
-        backgroundColor: '#34C759',
+        backgroundColor: '#007AFF',
         paddingVertical: 15,
         paddingHorizontal: 25,
         borderRadius: 30,

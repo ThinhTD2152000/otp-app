@@ -31,7 +31,7 @@ const RegistrationSuccessScreen = () => {
             {/* Nút quay về trang chủ */}
             <TouchableOpacity
                 style={styles.homeButton}
-                onPress={() => navigate('Home')}
+                onPress={() => navigate('home')}
             >
                 <Text style={styles.buttonText}>QUAY VỀ TRANG CHỦ</Text>
             </TouchableOpacity>

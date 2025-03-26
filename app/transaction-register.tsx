@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Alert } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigate } from '@/hooks/useNavigation';
 
 const TransactionMethodScreen = () => {
-    const [selectedMethod, setSelectedMethod] = useState(null);
+    const [selectedMethod, setSelectedMethod] = useState<any>(null);
     const navigate = useNavigate()
 
     const methods = [
@@ -16,9 +16,9 @@ const TransactionMethodScreen = () => {
         },
         {
             id: 'otp',
-            title: 'Đăng ký bằng mã OTP',
+            title: 'Đăng ký bằng Smart OTP',
             icon: 'sms',
-            description: 'Nhận mã OTP qua số điện thoại đăng ký'
+            description: 'Xác nhận PIN để tạo Smart OTP tự động'
         }
     ];
 
@@ -27,7 +27,7 @@ const TransactionMethodScreen = () => {
             Alert.alert('Thông báo', 'Vui lòng chọn phương thức đăng ký');
             return;
         }
-        navigate(selectedMethod === 'face' ? 'FaceRegistration' : 'OtpVerification');
+        navigate(selectedMethod === 'face' ? 'face-register' : 'smart-otp-register');
     };
 
     return (
@@ -151,6 +151,7 @@ const styles = StyleSheet.create({
     },
     methodInfo: {
         flex: 1,
+        minHeight: 70,
     },
     methodHeader: {
         flexDirection: 'row',
@@ -169,7 +170,7 @@ const styles = StyleSheet.create({
     methodDescription: {
         fontSize: 14,
         color: '#666',
-        paddingLeft: 34, // Căn lề bằng với icon
+        paddingLeft: 0, // Căn lề bằng với icon
     },
     continueButton: {
         backgroundColor: '#007AFF',

@@ -1,10 +1,11 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Image } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useNavigate } from '@/hooks/useNavigation';
+import { useNavigation } from '@react-navigation/native';
 
 const HomeScreen = () => {
-    const navigate = useNavigate()
+    const navigation = useNavigation()
+
     return (
         <SafeAreaView style={styles.container}>
             {/* Header với tiêu đề */}
@@ -15,7 +16,7 @@ const HomeScreen = () => {
             {/* Nội dung chính */}
             <View style={styles.content}>
                 <Image
-                    source={require('../assets/images/cccd.png')}
+                    source={require('../assets/images/logo1.jpg')}
                     style={styles.illustration}
                     resizeMode="contain"
                 />
@@ -27,7 +28,15 @@ const HomeScreen = () => {
             {/* Nút đăng ký giao dịch */}
             <TouchableOpacity
                 style={styles.registerButton}
-                onPress={() => navigate('transaction-register')}
+                onPress={() => (navigation as any).navigate('IdCapture')}
+            >
+                <MaterialIcons name="payment" size={24} color="white" />
+                <Text style={styles.buttonText}>XÁC THỰC TÀI KHOẢN</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+                style={styles.registerButton}
+                onPress={() => (navigation as any).navigate('TransactionRegister')}
             >
                 <MaterialIcons name="payment" size={24} color="white" />
                 <Text style={styles.buttonText}>ĐĂNG KÝ GIAO DỊCH</Text>
@@ -82,9 +91,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         paddingVertical: 16,
-        paddingHorizontal: 24,
+        paddingHorizontal: 20,
         borderRadius: 30,
         margin: 20,
+        marginTop: 0,
         shadowColor: '#007AFF',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.3,

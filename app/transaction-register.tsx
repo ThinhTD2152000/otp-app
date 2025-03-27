@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Alert } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useNavigate } from '@/hooks/useNavigation';
+import { useNavigation } from '@react-navigation/native';
 
 const TransactionMethodScreen = () => {
     const [selectedMethod, setSelectedMethod] = useState<any>(null);
-    const navigate = useNavigate()
+    const navigation = useNavigation()
 
     const methods = [
         {
@@ -27,7 +27,7 @@ const TransactionMethodScreen = () => {
             Alert.alert('Thông báo', 'Vui lòng chọn phương thức đăng ký');
             return;
         }
-        navigate(selectedMethod === 'face' ? 'face-register' : 'smart-otp-register');
+        (navigation as any).navigate(selectedMethod === 'face' ? 'FaceRegister' : 'SmartOtpRegister');
     };
 
     return (

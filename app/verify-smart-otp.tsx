@@ -1,9 +1,12 @@
+import { useNavigation } from '@react-navigation/native';
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
 const SmartOTPScreen = () => {
     const [otp, setOtp] = useState('');
     const [countdown, setCountdown] = useState(60);
+
+    const navigation = useNavigation()
 
     // Giả lập API trả về OTP (6 chữ số)
     useEffect(() => {
@@ -36,6 +39,7 @@ const SmartOTPScreen = () => {
     const handleConfirm = () => {
         // Xử lý xác nhận OTP
         console.log('Xác nhận OTP:', otp);
+        (navigation as any).replace('SuccessTransaction')
     };
 
     return (
@@ -64,11 +68,6 @@ const SmartOTPScreen = () => {
 
             <View style={styles.resendContainer}>
                 <Text style={styles.resendText}>Mã OTP sẽ hết hạn sau: {countdown}s</Text>
-                {countdown === 0 && (
-                    <TouchableOpacity onPress={handleResendOtp}>
-                        <Text style={styles.resendLink}>Gửi lại mã OTP</Text>
-                    </TouchableOpacity>
-                )}
             </View>
         </View>
     );

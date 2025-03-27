@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { MaterialIcons, AntDesign } from '@expo/vector-icons';
-import { useNavigate } from '@/hooks/useNavigation';
+import { useNavigation } from '@react-navigation/native';
 
 const PinVerificationScreen = () => {
     const [pin, setPin] = useState('');
     const [loading, setLoading] = useState(false);
-    const navigate = useNavigate();
+    const navigation = useNavigation();
 
     const handleNumberPress = (num: string) => {
         if (pin.length < 4) {
@@ -27,7 +27,7 @@ const PinVerificationScreen = () => {
         await new Promise(resolve => setTimeout(resolve, 1000));
 
         if (pin === '1234') { // Thay bằng API thực tế
-            navigate('verify-smart-otp');
+            (navigation as any).replace('VerifySmartOtp');
         } else {
             Alert.alert('Lỗi', 'Mã PIN không chính xác');
             setPin('');
@@ -85,7 +85,7 @@ const PinVerificationScreen = () => {
                     onPress={handleDelete}
                     disabled={pin.length === 0 || loading}
                 >
-                    <MaterialIcons name="backspace" size={24} color="#333" />backv
+                    <MaterialIcons name="backspace" size={24} color="#333" />
                 </TouchableOpacity>
             </View>
 
@@ -93,7 +93,7 @@ const PinVerificationScreen = () => {
             <View style={styles.buttonGroup}>
                 <TouchableOpacity
                     style={styles.backButton}
-                    onPress={() => navigate('transaction-register')}
+                    onPress={() => (navigation as any).goBack()}
                     disabled={loading}
                 >
                     <View style={styles.buttonContent}>
@@ -162,8 +162,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'center',
-        width: '100%',
-        marginBottom: 30
+        width: '80%',
+        marginBottom: 40
     },
     numberButton: {
         width: 70,

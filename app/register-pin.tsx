@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useNavigate } from '@/hooks/useNavigation';
+import { useNavigation } from '@react-navigation/native';
 
 const PinRegistrationScreen = () => {
     const [pin, setPin] = useState('');
     const [confirmPin, setConfirmPin] = useState('');
-    const navigate = useNavigate()
+    const navigation = useNavigation()
 
     const [step, setStep] = useState(1); // 1: Nhập PIN, 2: Xác nhận PIN
 
@@ -17,7 +17,7 @@ const PinRegistrationScreen = () => {
                 Alert.alert(
                     'Thành công',
                     'Đăng ký PIN thành công',
-                    [{ text: 'OK', onPress: () => navigate('success') }]
+                    [{ text: 'OK', onPress: () => (navigation as any).replace('SuccessAccount') }]
                 );
                 // Lưu PIN vào AsyncStorage hoặc state management ở đây
             } else {

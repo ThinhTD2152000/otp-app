@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet, Dimensions, Alert, ActivityIndicator } from 'react-native';
 import { MaterialIcons, AntDesign } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import { useNavigate } from '@/hooks/useNavigation';
 import LoadingIndicator from '@/components/Loading';
+import { useNavigation } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
 
@@ -11,7 +11,7 @@ export default function FaceCaptureScreen() {
     const [facePhoto, setFacePhoto] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    const navigate = useNavigate()
+    const navigation = useNavigation()
 
     const captureFace = async () => {
         setIsLoading(true);
@@ -80,7 +80,7 @@ export default function FaceCaptureScreen() {
                     <View style={styles.actionButtons}>
                         <TouchableOpacity
                             style={styles.confirmButton}
-                            onPress={() => navigate('register-pin')}
+                            onPress={() => (navigation as any).replace('RegisterPin')}
                         >
                             <Text style={styles.buttonText}>TIẾP TỤC</Text>
                         </TouchableOpacity>

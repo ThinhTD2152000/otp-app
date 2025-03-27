@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Image, TouchableOpacity, Text, ActivityIndicator, Alert, Dimensions } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import { useNavigate } from '@/hooks/useNavigation';
+import { useNavigation } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
 
@@ -10,7 +10,7 @@ export default function IDCaptureScreen() {
     const [idPhoto, setIdPhoto] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    const navigate = useNavigate()
+    const navigation = useNavigation()
 
     const captureID = async () => {
         setIsLoading(true);
@@ -31,7 +31,7 @@ export default function IDCaptureScreen() {
             if (!result.canceled) {
                 setIdPhoto(result.assets[0].uri);
             }
-            navigate('face-capture')
+            (navigation as any).replace('FaceCapture')
         } catch (error) {
             Alert.alert('Lỗi', 'Không thể mở camera');
         } finally {
@@ -143,23 +143,4 @@ export default function IDCaptureScreen() {
             </View>
         );
     }
-
-    // Phần preview ảnh (giữ nguyên logic như cũ)
-    // return (
-    //     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-
-    //         <Image source={{ uri: idPhoto }} style={{ width: 300, height: 200 }} />
-    //         <TouchableOpacity
-    //             style={{
-    //                 backgroundColor: '#4CAF50',
-    //                 padding: 15,
-    //                 borderRadius: 10,
-    //                 marginTop: 20
-    //             }}
-    //             onPress={() => navigate('face-capture')}
-    //         >
-    //             <Text style={{ color: 'white' }}>TIẾP TỤC</Text>
-    //         </TouchableOpacity>
-    //     </View >
-    // );
 };

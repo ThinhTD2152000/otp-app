@@ -1,23 +1,42 @@
-import axios from 'axios';
+// services/apiService.js
+import { Alert } from 'react-native';
 
-const API_BASE_URL = '';
+const BASE_URL = 'http://10.0.2.2:3002';
 
-export const requestOtp = async (data) => {
+const fetchData = async (endpoint, options = {}) => {
+  const { method = 'GET', headers = {}, body } = options;
+
+  const defaultHeaders = {
+    'Content-Type': 'application/json',
+    // 'Authorization': `Bearer ${token}`,
+  };
+
   try {
-    const response = await axios.post('', data);
-    return response.data;
+    const response = await fetch(`${BASE_URL}${endpoint}`, {
+      method,
+      headers: { ...defaultHeaders, ...headers },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Request failed');
+    }
+
+    return await response.json();
   } catch (error) {
-    console.error('Lỗi khi gửi OTP:', error);
+    console.error('API Error:', error);
+
+    Alert.alert('Lỗi', error.message || 'Đã có lỗi xảy ra');
+
     throw error;
   }
 };
 
-export const verifyOtp = async (data) => {
-  try {
-    const response = await axios.post('', data);
-    return response.data;
-  } catch (error) {
-    console.error('Lỗi khi xác minh OTP:', error);
-    throw error;
-  }
-};
+//  GET
+export const get = (endpoint, headers) =>
+  fetchData(endpoint, { method: 'GET', headers });
+
+//  POST
+export const post = (endpoint, body, headers) =>
+  fetchData(endpoint, { method: 'POST', body, headers });

@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useNavigate } from '@/hooks/useNavigation';
+import { useNavigation } from '@react-navigation/native';
 
 const RegistrationSuccessScreen = () => {
-    const navigate = useNavigate()
+    const navigation = useNavigation()
     return (
         <View style={styles.container}>
             {/* Biểu tượng thành công */}
@@ -31,7 +31,7 @@ const RegistrationSuccessScreen = () => {
             {/* Nút quay về trang chủ */}
             <TouchableOpacity
                 style={styles.homeButton}
-                onPress={() => navigate('home')}
+                onPress={() => (navigation as any).replace('Home')}
             >
                 <Text style={styles.buttonText}>QUAY VỀ TRANG CHỦ</Text>
             </TouchableOpacity>

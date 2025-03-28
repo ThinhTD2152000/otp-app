@@ -14,7 +14,7 @@ const AuthScreen = () => {
                     style={styles.logo}
                     resizeMode="contain"
                 />
-                <Text style={styles.title}>Xác thực giao dịch nhanh chóng</Text>
+                <Text style={styles.title}>FAST TRANSACTION AUTHENTICATION</Text>
             </View>
 
             {/* Phần 2: 2 Button dạng cột */}
@@ -23,14 +23,14 @@ const AuthScreen = () => {
                     style={[styles.button, styles.loginButton]}
                     onPress={() => (navigation as any).navigate('Login')}
                 >
-                    <Text style={styles.loginButtonText}>Đăng nhập</Text>
+                    <Text style={styles.loginButtonText}>SIGN IN</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                     style={[styles.button, styles.registerButton]}
                     onPress={() => (navigation as any).navigate('RegisterAccount')}
                 >
-                    <Text style={styles.registerButtonText}>Đăng ký</Text>
+                    <Text style={styles.registerButtonText}>SIGN UP</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -50,9 +50,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     logo: {
-        width: 180,
-        height: 180,
-        marginBottom: 24,
+        width: 350,
+        height: 350,
     },
     title: {
         fontSize: 22,
@@ -72,12 +71,12 @@ const styles = StyleSheet.create({
         marginVertical: 8, // Khoảng cách giữa 2 button
     },
     loginButton: {
-        backgroundColor: '#3498db', // Nền xanh
+        backgroundColor: '#007bff', // Nền xanh
     },
     registerButton: {
         backgroundColor: '#fff',
         borderWidth: 1,
-        borderColor: '#3498db', // Viền xanh
+        borderColor: '#007bff', // Viền xanh
     },
     loginButtonText: {
         color: '#fff', // Chữ trắng
@@ -85,7 +84,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     registerButtonText: {
-        color: '#3498db', // Chữ xanh
+        color: '#007bff', // Chữ xanh
         fontSize: 16,
         fontWeight: 'bold',
     },

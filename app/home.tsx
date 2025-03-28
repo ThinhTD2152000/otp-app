@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Image } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
 const HomeScreen = () => {
@@ -40,6 +40,14 @@ const HomeScreen = () => {
             >
                 <MaterialIcons name="payment" size={24} color="white" />
                 <Text style={styles.buttonText}>ĐĂNG KÝ GIAO DỊCH</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+                style={styles.registerButton}
+                onPress={() => (navigation as any).navigate('TransferBank')}
+            >
+                <MaterialCommunityIcons name="bank-transfer-in" size={26} color="white" />
+                <Text style={styles.buttonText}>CHUYỂN KHOẢN</Text>
             </TouchableOpacity>
         </SafeAreaView>
     );

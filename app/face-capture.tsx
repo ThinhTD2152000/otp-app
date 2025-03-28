@@ -73,6 +73,9 @@ export default function FaceCaptureScreen() {
                 </View>
             ) : (
                 <View style={styles.previewContainer}>
+                    <Text style={styles.textVerify}>ĐANG XÁC THỰC...</Text>
+                    {/* <Text style={styles.textSuccess}>Xác thực khuôn mặt thành công</Text> */}
+
                     <Image source={{ uri: facePhoto }} style={styles.previewImage} />
 
                     <LoadingIndicator size={50} color='blue' />
@@ -162,7 +165,7 @@ const styles = StyleSheet.create({
         marginBottom: 30
     },
     actionButtons: {
-        flexDirection: 'row',
+        flexDirection: 'column',
         gap: 20
     },
     retakeButton: {
@@ -171,7 +174,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 25,
         borderRadius: 30,
         flexDirection: 'row',
-        alignItems: 'center',
+        justifyContent: 'center',
         gap: 10
     },
     confirmButton: {
@@ -180,8 +183,19 @@ const styles = StyleSheet.create({
         paddingHorizontal: 25,
         borderRadius: 30,
         flexDirection: 'row',
-        alignItems: 'center',
+        justifyContent: 'center',
         gap: 10
+    },
+    textSuccess: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#4CAF50', // Màu xanh lá
+        marginBottom: 20,
+    },
+    textVerify: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 20,
     },
     buttonText: {
         color: 'white',

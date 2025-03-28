@@ -31,7 +31,7 @@ export default function IDCaptureScreen() {
             if (!result.canceled) {
                 setIdPhoto(result.assets[0].uri);
             }
-            (navigation as any).replace('FaceCapture')
+            (navigation as any).replace('IdCardResult')
         } catch (error) {
             Alert.alert('Lỗi', 'Không thể mở camera');
         } finally {

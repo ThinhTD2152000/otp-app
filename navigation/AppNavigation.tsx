@@ -13,6 +13,9 @@ import FaceRegisterTransaction from '@/app/face-register-transaction';
 import TransactionMethodScreen from '@/app/transaction-register';
 import AuthScreen from '@/app/default';
 import RegisterAccountScreen from '@/app/resgister-account';
+import IDCardResultScreen from '@/app/id-result';
+import TransferBankScreen from '@/app/transfer-bank';
+import TransactionInfoScreen from '@/app/confirm-transfer';
 
 const Stack = createNativeStackNavigator();
 
@@ -32,6 +35,9 @@ export default function AppNavigator() {
             <Stack.Screen name="VerifySmartOtp" component={SmartOTPScreen} />
             <Stack.Screen name="Default" component={AuthScreen} />
             <Stack.Screen name="RegisterAccount" component={RegisterAccountScreen} />
+            <Stack.Screen name="IdCardResult" component={IDCardResultScreen} />
+            <Stack.Screen name="TransferBank" component={TransferBankScreen} />
+            <Stack.Screen name="TransferInfoBank" component={TransactionInfoScreen} />
         </Stack.Navigator>
     );
 }

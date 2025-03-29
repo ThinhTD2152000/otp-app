@@ -12,7 +12,7 @@ const FaceCaptureSuccess = () => {
 
             {/* Ảnh khuôn mặt */}
             <Image
-                source={require('../assets/images/logo1.jpg')}
+                source={require('@/assets/images/logo1.jpg')}
                 style={styles.faceImage}
                 resizeMode="contain"
             />

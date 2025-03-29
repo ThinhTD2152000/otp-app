@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native';
-import { post } from '../fetch/useApi';
+import { register } from '@/fetch/authAPI';
 
 const RegisterAccountScreen = () => {
     const [form, setForm] = useState<any>({
@@ -84,7 +84,7 @@ const RegisterAccountScreen = () => {
         setIsSubmitting(true);
 
         try {
-            await post('/auth/register', newData, {})
+            await register(newData)
             Alert.alert('Thành công', 'Tài khoản đã được tạo!', [
                 { text: 'OK', onPress: () => (navigation as any).navigate('Login') }
             ]);

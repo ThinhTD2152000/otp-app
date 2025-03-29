@@ -1,30 +1,31 @@
 // File: navigation/AppNavigator.tsx
-import LoginScreen from '@/app/login';
-import FaceCaptureScreen from '@/app/face-capture';
+import LoginScreen from '@/app/auth/login';
 import HomeScreen from '@/app/home';
-import IDCaptureScreen from '@/app/id-capture';
-import PinRegistrationScreen from '@/app/register-pin';
-import PinVerificationScreen from '@/app/smart-otp-register';
-import RegistrationSuccessScreen from '@/app/success-account';
-import TransactionSuccessScreen from '@/app/success-transaction';
+import PinVerificationScreen from '@/app/registerTransaction/transactionOTP/smart-otp-register';
+import RegistrationSuccessScreen from '@/app/verfiyAccount/success-account';
+import TransactionSuccessScreen from '@/app/registerTransaction/success-transaction';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import SmartOTPScreen from '@/app/verify-smart-otp';
-import FaceRegisterTransaction from '@/app/face-register-transaction';
-import TransactionMethodScreen from '@/app/transaction-register';
+import SmartOTPScreen from '@/app/registerTransaction/transactionOTP/verify-smart-otp';
+import FaceRegisterTransaction from '@/app/registerTransaction/transactionFace/face-register-transaction';
+import TransactionMethodScreen from '@/app/registerTransaction/transaction-register';
 import AuthScreen from '@/app/default';
-import RegisterAccountScreen from '@/app/resgister-account';
-import IDCardResultScreen from '@/app/id-result';
-import TransferBankScreen from '@/app/transfer-bank';
-import TransferBankConfirm from '@/app/confirm-transfer';
-import TransferSuccess from '@/app/transfer-bank';
-import TransferConfirmFace from '@/app/transfer-confirm-face';
-import TransferConfirmOTP from '@/app/transfer-confirm-otp';
-import TransferSendOTP from '@/app/tranfer-send-otp';
-import FaceCaptureSuccess from '@/app/face-capture-success';
+import RegisterAccountScreen from '@/app/auth/register-account';
+import TransferBankScreen from '@/app/transferBank/transfer-bank';
+import TransferBankConfirm from '@/app/transferBank/transferConfirm/confirm-transfer';
+import TransferSuccess from '@/app/transferBank/transfer-bank';
+import TransferConfirmFace from '@/app/transferBank/transferConfirm/transfer-confirm-face';
+import TransferConfirmOTP from '@/app/transferBank/transferConfirm/transfer-confirm-otp';
+import TransferSendOTP from '@/app/transferBank/transferConfirm/tranfer-send-otp';
+import FaceCaptureScreen from '@/app/verfiyAccount/faceCapture/face-capture';
+import IDCaptureScreen from '@/app/verfiyAccount/ipCapture/id-capture';
+import PinRegistrationScreen from '@/app/verfiyAccount/registerPIN/register-pin';
+import IDCardResultScreen from '@/app/verfiyAccount/ipCapture/id-result';
+import FaceCaptureSuccess from '@/app/verfiyAccount/faceCapture/face-capture-success';
 
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
+
     return (
         <Stack.Navigator initialRouteName="Default">
             <Stack.Screen name="Home" component={HomeScreen} />

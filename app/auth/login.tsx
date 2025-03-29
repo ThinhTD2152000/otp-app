@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { post } from '../fetch/useApi';
+import { login } from '@/fetch/authAPI'
 
 export default function LoginScreen() {
     const [username, setUsername] = useState('');
@@ -19,23 +19,27 @@ export default function LoginScreen() {
         const newData = { username, password }
 
         setLoading(true);
-        console.log(newData)
 
-        setTimeout(() => {
-            (navigation as any).replace('Home');
-        }, 1000);
         try {
-            const res: any = await post('/auth/login', newData, {});
-            console.log("success")
+            const res: any = await login(newData);
+            console.log(res)
+
             Alert.alert(
                 'Thông báo',
                 'Đăng nhập thành công',
+                [{
+                    text: 'Tiếp tục', onPress: () => {
+                        setTimeout(() => {
+                            (navigation as any).replace('Home');
+                        }, 1000);
+                    }
+                }]
             );
+
         } catch (error: any) {
             Alert.alert('Đăng nhập thất bại');
         } finally {
             setLoading(false);
-            console.log("finally")
         }
     };
 

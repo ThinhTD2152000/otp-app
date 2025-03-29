@@ -23,7 +23,7 @@ const RegistrationSuccessScreen = () => {
 
             {/* Ảnh minh họa */}
             <Image
-                source={require('../assets/images/cccd.png')}
+                source={require('@/assets/images/cccd.png')}
                 style={styles.illustration}
                 resizeMode="contain"
             />

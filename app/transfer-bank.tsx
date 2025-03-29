@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Switch, Modal, Fla
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
-const TransferBankScreen = () => {
+const TransferSuccess = () => {
     const [selectedBank, setSelectedBank] = useState<any>(null);
     const [isFastTransfer, setIsFastTransfer] = useState(true);
     const [accountNumber, setAccountNumber] = useState('');
@@ -35,7 +35,7 @@ const TransferBankScreen = () => {
         : banks;
 
     const handleContinue = () => {
-        (navigation as any).navigate('TransferInfoBank', {
+        (navigation as any).navigate('TransferBankConfirm', {
             bank: selectedBank,
             isFastTransfer,
             accountNumber,
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     modalView: {
         flex: 1,
         backgroundColor: '#fff',
-        paddingTop: 15,
+        paddingTop: 50,
     },
     modalHeader: {
         flexDirection: 'row',
@@ -273,4 +273,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default TransferBankScreen;
+export default TransferSuccess;

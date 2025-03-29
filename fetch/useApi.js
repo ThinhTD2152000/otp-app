@@ -1,7 +1,7 @@
 // services/apiService.js
 import { Alert } from 'react-native';
 
-const BASE_URL = 'http://10.0.2.2:3002';
+const BASE_URL = 'http://192.168.110.220:3002';
 
 const fetchData = async (endpoint, options = {}) => {
   const { method = 'GET', headers = {}, body } = options;

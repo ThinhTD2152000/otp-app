@@ -1,102 +1,171 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Modal } from 'react-native';
 
-const TransactionInfoScreen = () => {
-    const [currentBalance, setCurrentBalance] = useState(50000); // Giả sử số dư hiện tại là 50,000 VND
-    const [transferAmount, setTransferAmount] = useState(55678); // Số tiền chuyển
-    const [isProcessing, setIsProcessing] = useState(false);
+const TransferBankConfirm = () => {
+    const [senderInfo] = useState({
+        name: 'NGUYEN VAN A',
+        account: '1234567890',
+        balance: 1000000, // 1,000,000 VND
+        bank: 'Vietcombank'
+    });
 
-    // Kiểm tra số dư khi màn hình được load
-    useEffect(() => {
-        checkBalance();
-    }, []);
+    const [receiverInfo] = useState({
+        name: 'NGO THI QUYNH TRANG',
+        account: '19036341990012',
+        bank: 'Techcombank'
+    });
 
-    const checkBalance = () => {
-        if (transferAmount > currentBalance) {
-            Alert.alert(
-                'Thông báo',
-                'Số dư không đủ để thực hiện giao dịch',
-                [{ text: 'Đã hiểu', onPress: () => console.log('OK Pressed') }]
-            );
+    const navigation = useNavigation()
+    const [showPaymentMethodModal, setShowPaymentMethodModal] = useState(false);
+    const [paymentMethod, setPaymentMethod] = useState<'face' | 'otp'>('face');
+    const [amount, setAmount] = useState('');
+    const [isConfirming, setIsConfirming] = useState(false);
+
+    const handleTransfer = () => {
+        const transferAmount = parseInt(amount.replace(/\D/g, '')) || 0;
+
+        if (!transferAmount) {
+            Alert.alert('Lỗi', 'Vui lòng nhập số tiền hợp lệ');
+            return;
         }
-    };
 
-    const handleContinue = () => {
-        if (transferAmount > currentBalance) {
+        if (transferAmount > senderInfo.balance) {
             Alert.alert(
-                'Lỗi',
-                'Số dư trong tài khoản không đủ để thực hiện giao dịch này',
+                'Số dư không đủ',
+                `Số dư hiện tại: ${senderInfo.balance.toLocaleString()} VND\nBạn cần thêm ${(transferAmount - senderInfo.balance).toLocaleString()} VND để thực hiện giao dịch`,
                 [{ text: 'Đã hiểu' }]
             );
             return;
         }
 
-        setIsProcessing(true);
-        // Giả lập xử lý giao dịch
+        setIsConfirming(true);
+
+        // Giả lập call API
         setTimeout(() => {
-            setIsProcessing(false);
-            // Chuyển sang màn hình xác nhận thành công
-            // navigation.navigate('TransactionSuccess');
-            Alert.alert('Thành công', 'Giao dịch đã được thực hiện');
+            setIsConfirming(false);
+            (navigation as any).navigate(paymentMethod === 'face' ? 'TransferConfirmFace' : 'TransferConfirmOTP', {
+                amount: transferAmount,
+                receiver: receiverInfo.name,
+                receiverBank: receiverInfo.bank
+            });
         }, 1500);
+    };
+
+    // Format số tiền khi nhập
+    const formatAmount = (text: any) => {
+        const num = parseInt(text.replace(/\D/g, '')) || 0;
+        setAmount(num.toLocaleString('vi-VN'));
     };
 
     return (
         <View style={styles.container}>
-            <Text style={styles.header}>Thông tin giao dịch</Text>
+            <Text style={styles.title}>THANH TOÁN</Text>
 
-            <View style={styles.infoContainer}>
-                <Text style={styles.accountNumber}>2152865981</Text>
-
-                {/* Hiển thị số tiền - đổi màu đỏ nếu không đủ số dư */}
-                <Text style={[
-                    styles.amount,
-                    transferAmount > currentBalance && styles.insufficientAmount
-                ]}>
-                    {transferAmount.toLocaleString()} VND
-                </Text>
-
-                <View style={styles.bankInfo}>
-                    <Text style={styles.bankAccount}>19036341990012</Text>
-                    <Text style={styles.bankName}>NGO THI QUYNH TRANG</Text>
-                    <Text style={styles.bankName}>Techcombank</Text>
+            {/* Thông tin người chuyển */}
+            <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Người chuyển</Text>
+                <View style={styles.infoCard}>
+                    <Text style={styles.infoText}>{senderInfo.name}</Text>
+                    <Text style={styles.infoText}>{senderInfo.account}</Text>
+                    <Text style={styles.infoText}>{senderInfo.bank}</Text>
+                    <Text style={styles.balanceText}>
+                        Số dư: {senderInfo.balance.toLocaleString('vi-VN')} VND
+                    </Text>
                 </View>
-
-                <View style={styles.detailRow}>
-                    <Text style={styles.detailLabel}>Số tiền</Text>
-                    <Text style={styles.detailValue}>{transferAmount.toLocaleString()} VND</Text>
-                </View>
-
-                <View style={styles.detailRow}>
-                    <Text style={styles.detailLabel}>Số dư khả dụng</Text>
-                    <Text style={styles.detailValue}>{currentBalance.toLocaleString()} VND</Text>
-                </View>
-
-                <View style={styles.detailRow}>
-                    <Text style={styles.detailLabel}>Nội dung giao dịch</Text>
-                    <Text style={styles.detailValue}>29/150</Text>
-                </View>
-
-                <Text style={styles.transactionNote}>NGUYEN TRUONG SON Chuyen tien</Text>
             </View>
 
-            {/* Hiển thị cảnh báo nếu số dư không đủ */}
-            {transferAmount > currentBalance && (
-                <Text style={styles.warningText}>⚠️ Số dư không đủ để thực hiện giao dịch</Text>
-            )}
+            {/* Thông tin người nhận */}
+            <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Người nhận</Text>
+                <View style={styles.infoCard}>
+                    <Text style={styles.infoText}>{receiverInfo.name}</Text>
+                    <Text style={styles.infoText}>{receiverInfo.account}</Text>
+                    <Text style={styles.infoText}>{receiverInfo.bank}</Text>
+                </View>
+            </View>
 
+            {/* Nhập số tiền */}
+            <View style={styles.amountInputContainer}>
+                <Text style={styles.inputLabel}>Số tiền chuyển (VND)</Text>
+                <TextInput
+                    style={styles.amountInput}
+                    placeholder="Nhập số tiền"
+                    value={amount}
+                    onChangeText={formatAmount}
+                    keyboardType="numeric"
+                />
+            </View>
+
+            {/* Phương thức thanh toán */}
             <TouchableOpacity
-                style={[
-                    styles.continueButton,
-                    (transferAmount > currentBalance || isProcessing) && styles.disabledButton
-                ]}
-                onPress={handleContinue}
-                disabled={transferAmount > currentBalance || isProcessing}
+                style={styles.paymentMethodContainer}
+                onPress={() => setShowPaymentMethodModal(true)}
             >
-                <Text style={styles.continueButtonText}>
-                    {isProcessing ? 'Đang xử lý...' : 'Tiếp tục'}
+                <Text style={styles.paymentMethodLabel}>Phương thức thanh toán</Text>
+                <Text style={styles.paymentMethodValue}>
+                    {paymentMethod === 'face' ? 'Xác thực khuôn mặt' : 'Smart OTP'}
                 </Text>
             </TouchableOpacity>
+
+            {/* Nút xác nhận */}
+            <TouchableOpacity
+                style={[styles.confirmButton, (!amount || isConfirming) && styles.disabledButton]}
+                onPress={handleTransfer}
+                disabled={!amount || isConfirming}
+            >
+                <Text style={styles.confirmButtonText}>
+                    {isConfirming ? 'ĐANG XỬ LÝ...' : 'XÁC NHẬN THANH TOÁN'}
+                </Text>
+            </TouchableOpacity>
+
+            {/* Modal chọn phương thức thanh toán */}
+            <Modal
+                visible={showPaymentMethodModal}
+                transparent
+                animationType="slide"
+                onRequestClose={() => setShowPaymentMethodModal(false)}
+            >
+                <View style={styles.paymentMethodModalBackground}>
+                    <View style={styles.paymentMethodModalContainer}>
+                        <Text style={styles.paymentMethodModalTitle}>Chọn phương thức thanh toán</Text>
+
+                        {/* Option Khuôn mặt */}
+                        <TouchableOpacity
+                            style={styles.paymentOption}
+                            onPress={() => setPaymentMethod('face')}
+                        >
+                            <View style={styles.radioButton}>
+                                {paymentMethod === 'face' && <View style={styles.radioButtonSelected} />}
+                            </View>
+                            <Text style={styles.paymentOptionText}>Xác thực khuôn mặt</Text>
+                        </TouchableOpacity>
+
+                        {/* Option Smart OTP */}
+                        <TouchableOpacity
+                            style={styles.paymentOption}
+                            onPress={() => setPaymentMethod('otp')}
+                        >
+                            <View style={styles.radioButton}>
+                                {paymentMethod === 'otp' && <View style={styles.radioButtonSelected} />}
+                            </View>
+                            <Text style={styles.paymentOptionText}>Smart OTP</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={styles.confirmPaymentMethodButton}
+                            onPress={() => setShowPaymentMethodModal(false)}
+                        >
+                            <Text style={styles.confirmPaymentMethodText}>XÁC NHẬN</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
+
+            {/* Modal loading (giữ nguyên) */}
+            <Modal visible={isConfirming} transparent>
+                {/* ... (giữ nguyên phần loading) */}
+            </Modal>
         </View>
     );
 };
@@ -107,102 +176,168 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: '#f5f5f5',
     },
-    header: {
+    title: {
         fontSize: 22,
         fontWeight: 'bold',
-        marginBottom: 20,
-        color: '#333',
+        color: '#2c3e50',
         textAlign: 'center',
-    },
-    infoContainer: {
-        backgroundColor: '#fff',
-        borderRadius: 10,
-        padding: 20,
         marginBottom: 20,
+    },
+    section: {
+        marginBottom: 20,
+    },
+    sectionTitle: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#7f8c8d',
+        marginBottom: 8,
+    },
+    infoCard: {
+        backgroundColor: '#fff',
+        borderRadius: 8,
+        padding: 15,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4,
         elevation: 3,
     },
-    accountNumber: {
+    infoText: {
+        fontSize: 16,
+        color: '#333',
+        marginBottom: 5,
+    },
+    balanceText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#27ae60',
+        marginTop: 8,
+    },
+    amountInputContainer: {
+        marginVertical: 25,
+    },
+    inputLabel: {
+        fontSize: 16,
+        color: '#7f8c8d',
+        marginBottom: 8,
+    },
+    amountInput: {
+        height: 50,
+        backgroundColor: '#fff',
+        borderWidth: 1,
+        borderColor: '#ddd',
+        borderRadius: 8,
+        paddingHorizontal: 15,
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    confirmButton: {
+        backgroundColor: '#3498db',
+        padding: 16,
+        borderRadius: 8,
+        alignItems: 'center',
+        marginTop: 20,
+    },
+    disabledButton: {
+        backgroundColor: '#bdc3c7',
+    },
+    confirmButtonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    modalBackground: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalContainer: {
+        backgroundColor: '#fff',
+        padding: 20,
+        borderRadius: 8,
+        alignItems: 'center',
+    },
+    modalText: {
+        fontSize: 16,
+        color: '#333',
+    },
+    paymentMethodContainer: {
+        backgroundColor: '#fff',
+        borderWidth: 1,
+        borderColor: '#ddd',
+        borderRadius: 8,
+        padding: 15,
+        marginBottom: 20,
+    },
+    paymentMethodLabel: {
+        fontSize: 14,
+        color: '#7f8c8d',
+        marginBottom: 5,
+    },
+    paymentMethodValue: {
+        fontSize: 16,
+        color: '#333',
+        fontWeight: '500',
+    },
+    paymentMethodModalBackground: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    paymentMethodModalContainer: {
+        backgroundColor: '#fff',
+        width: '80%',
+        borderRadius: 10,
+        padding: 20,
+    },
+    paymentMethodModalTitle: {
         fontSize: 18,
         fontWeight: 'bold',
         color: '#333',
-        marginBottom: 5,
-        textAlign: 'center',
-    },
-    amount: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#2ecc71',
         marginBottom: 20,
         textAlign: 'center',
     },
-    insufficientAmount: {
-        color: '#e74c3c', // Màu đỏ khi không đủ số dư
-    },
-    bankInfo: {
-        marginBottom: 20,
-        borderBottomWidth: 1,
-        borderBottomColor: '#eee',
-        paddingBottom: 15,
-    },
-    bankAccount: {
-        fontSize: 16,
-        color: '#333',
-        textAlign: 'center',
-        marginBottom: 5,
-    },
-    bankName: {
-        fontSize: 16,
-        color: '#555',
-        textAlign: 'center',
-    },
-    detailRow: {
+    paymentOption: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 12,
-        paddingBottom: 8,
+        alignItems: 'center',
+        paddingVertical: 15,
         borderBottomWidth: 1,
-        borderBottomColor: '#f5f5f5',
+        borderBottomColor: '#f0f0f0',
     },
-    detailLabel: {
-        fontSize: 16,
-        color: '#666',
+    radioButton: {
+        width: 20,
+        height: 20,
+        borderRadius: 10,
+        borderWidth: 2,
+        borderColor: '#3498db',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 15,
     },
-    detailValue: {
+    radioButtonSelected: {
+        width: 12,
+        height: 12,
+        borderRadius: 6,
+        backgroundColor: '#3498db',
+    },
+    paymentOptionText: {
         fontSize: 16,
-        fontWeight: '500',
         color: '#333',
     },
-    transactionNote: {
-        fontSize: 16,
-        color: '#333',
-        marginTop: 15,
-        fontStyle: 'italic',
-        textAlign: 'center',
-    },
-    warningText: {
-        color: '#e74c3c',
-        textAlign: 'center',
-        marginBottom: 15,
-        fontWeight: '500',
-    },
-    continueButton: {
+    confirmPaymentMethodButton: {
         backgroundColor: '#3498db',
         padding: 15,
         borderRadius: 8,
         alignItems: 'center',
+        marginTop: 20,
     },
-    disabledButton: {
-        backgroundColor: '#95a5a6',
-    },
-    continueButtonText: {
+    confirmPaymentMethodText: {
         color: '#fff',
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: 'bold',
     },
 });
 
-export default TransactionInfoScreen;
+export default TransferBankConfirm;

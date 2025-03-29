@@ -15,7 +15,11 @@ import AuthScreen from '@/app/default';
 import RegisterAccountScreen from '@/app/resgister-account';
 import IDCardResultScreen from '@/app/id-result';
 import TransferBankScreen from '@/app/transfer-bank';
-import TransactionInfoScreen from '@/app/confirm-transfer';
+import TransferBankConfirm from '@/app/confirm-transfer';
+import TransferSuccess from '@/app/transfer-bank';
+import TransferConfirmFace from '@/app/transfer-confirm-face';
+import TransferConfirmOTP from '@/app/transfer-confirm-otp';
+import TransferSendOTP from '@/app/tranfer-send-otp';
 
 const Stack = createNativeStackNavigator();
 
@@ -37,7 +41,11 @@ export default function AppNavigator() {
             <Stack.Screen name="RegisterAccount" component={RegisterAccountScreen} />
             <Stack.Screen name="IdCardResult" component={IDCardResultScreen} />
             <Stack.Screen name="TransferBank" component={TransferBankScreen} />
-            <Stack.Screen name="TransferInfoBank" component={TransactionInfoScreen} />
+            <Stack.Screen name="TransferBankConfirm" component={TransferBankConfirm} />
+            <Stack.Screen name="TransferBankSuccess" component={TransferSuccess} />
+            <Stack.Screen name="TransferConfirmFace" component={TransferConfirmFace} />
+            <Stack.Screen name="TransferConfirmOTP" component={TransferConfirmOTP} />
+            <Stack.Screen name="TransferSendOTP" component={TransferSendOTP} />
         </Stack.Navigator>
     );
 }

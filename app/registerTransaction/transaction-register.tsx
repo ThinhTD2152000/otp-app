@@ -3,9 +3,11 @@ import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Alert } from 'r
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
-const TransactionMethodScreen = () => {
+const TransactionMethodScreen = ({ route }: { route: { params: { methodPay?: any } } }) => {
     const [selectedMethod, setSelectedMethod] = useState<any>(null);
     const navigation = useNavigation()
+
+    const methodPay: any = route?.params.methodPay
 
     const methods = [
         {
@@ -42,11 +44,12 @@ const TransactionMethodScreen = () => {
                 <Text style={styles.subTitle}>Chọn phương thức đăng ký</Text>
 
                 {methods.map((method) => (
+                    methodPay.includes(method.id) &&
                     <TouchableOpacity
                         key={method.id}
                         style={[
                             styles.methodCard,
-                            selectedMethod === method.id && styles.selectedCard
+                            selectedMethod === method.id && styles.selectedCard,
                         ]}
                         onPress={() => setSelectedMethod(method.id)}
                     >

@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 const { width } = Dimensions.get('window');
 
 export default function IDCaptureScreen() {
-    const [idPhoto, setIdPhoto] = useState(null);
+    const [idPhoto, setIdPhoto] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(false);
 
     const navigation = useNavigation()
@@ -31,7 +31,8 @@ export default function IDCaptureScreen() {
             if (!result.canceled) {
                 setIdPhoto(result.assets[0].uri);
             }
-            (navigation as any).replace('IdCardResult')
+
+            (navigation as any).replace('IdCardResult', { ocrData: result.assets[0].uri })
         } catch (error) {
             Alert.alert('Lỗi', 'Không thể mở camera');
         } finally {

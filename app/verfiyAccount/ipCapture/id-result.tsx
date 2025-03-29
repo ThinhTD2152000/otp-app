@@ -1,46 +1,77 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { post } from '@/fetch/apiClient';
 
-const IDCardResultScreen = () => {
+const IDCardResultScreen = ({ route }: { route: { params: { ocrData: any } } }) => {
+
+    const testImage = require('@/assets/images/ocr.jpeg')
+
     const navigation = useNavigation();
-    const route = useRoute();
-    const ocrData: any = {
-        idNumber: '0123456789',
-        fullName: 'NGUYEN VAN A',
-        dob: '01/01/1990',
-        gender: 'Nam',
-        nationality: 'Việt Nam',
-        hometown: 'Hà Nội',
-        address: '123 Đường ABC, Quận 1, TP.HCM',
-        issueDate: '01/01/2020',
-        issuePlace: 'CA TP Hà Nội',
-        frontImage: 'base64_or_url_image', // (nếu có)
-        backImage: 'base64_or_url_image'
-    }
-    // const { ocrData }: any = route.params; // Nhận dữ liệu OCR từ màn hình chụp
+    // const ocrData: any = {
+    //     idNumber: '0123456789',
+    //     fullName: 'NGUYEN VAN A',
+    //     dob: '01/01/1990',
+    //     gender: 'Nam',
+    //     nationality: 'Việt Nam',
+    //     hometown: 'Hà Nội',
+    //     address: '123 Đường ABC, Quận 1, TP.HCM',
+    //     issueDate: '01/01/2020',
+    //     issuePlace: 'CA TP Hà Nội',
+    //     frontImage: 'base64_or_url_image', // (nếu có)
+    //     backImage: 'base64_or_url_image'
+    // }
+    const ocrData = route.params.ocrData
+    console.log(ocrData)
 
     // Các trường thông tin CCCD
     const fields = [
-        { label: 'Số CCCD', value: ocrData.idNumber },
-        { label: 'Họ và tên', value: ocrData.fullName },
-        { label: 'Ngày sinh', value: ocrData.dob },
-        { label: 'Giới tính', value: ocrData.gender },
-        { label: 'Quốc tịch', value: ocrData.nationality },
-        { label: 'Quê quán', value: ocrData.hometown },
-        { label: 'Địa chỉ thường trú', value: ocrData.address },
-        { label: 'Ngày cấp', value: ocrData.issueDate },
-        { label: 'Nơi cấp', value: ocrData.issuePlace },
+        { label: 'Số CCCD', value: ocrData },
+        // { label: 'Họ và tên', value: ocrData.fullName },
+        // { label: 'Ngày sinh', value: ocrData.dob },
+        // { label: 'Giới tính', value: ocrData.gender },
+        // { label: 'Quốc tịch', value: ocrData.nationality },
+        // { label: 'Quê quán', value: ocrData.hometown },
+        // { label: 'Địa chỉ thường trú', value: ocrData.address },
+        // { label: 'Ngày cấp', value: ocrData.issueDate },
+        // { label: 'Nơi cấp', value: ocrData.issuePlace },
     ];
+
+    const handleOCR = async () => {
+        try {
+            const formData: any = new FormData()
+            formData.append('image', {
+                url: testImage,
+                type: 'image/jpeg',
+                name: 'cccd.jpg'
+            })
+            console.log(formData)
+            const res = await post('kyc/OCR', formData,
+                {
+                    'Content-Type': 'multipart/form-data'
+
+                })
+            console.log(res)
+        } catch (error) {
+            throw error
+        }
+    }
+
+    useEffect(() => {
+        const fetchData = async () => {
+            await handleOCR();
+        };
+        fetchData();
+    }, []);
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
             {/* Phần header */}
             <View style={styles.header}>
                 <Text style={styles.successTitle}>OCR thành công</Text>
-                {ocrData.frontImage && (
+                {ocrData && (
                     <Image
-                        source={{ uri: ocrData.frontImage }}
+                        source={{ uri: ocrData }}
                         style={styles.idImage}
                         resizeMode="contain"
                     />

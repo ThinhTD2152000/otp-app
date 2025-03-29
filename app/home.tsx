@@ -3,8 +3,10 @@ import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Image } from 'r
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
-const HomeScreen = () => {
+const HomeScreen = ({ route }: { route: { params?: { user?: any } } }) => {
     const navigation = useNavigation()
+
+    const user: any = route.params?.user
 
     return (
         <SafeAreaView style={styles.container}>
@@ -34,13 +36,16 @@ const HomeScreen = () => {
                 <Text style={styles.buttonText}>XÁC THỰC TÀI KHOẢN</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-                style={styles.registerButton}
-                onPress={() => (navigation as any).navigate('TransactionRegister')}
-            >
-                <MaterialIcons name="payment" size={24} color="white" />
-                <Text style={styles.buttonText}>ĐĂNG KÝ GIAO DỊCH</Text>
-            </TouchableOpacity>
+            {
+                !(user?.isOpenOTP && user?.isOpenFace) &&
+                <TouchableOpacity
+                    style={styles.registerButton}
+                    onPress={() => (navigation as any).navigate('TransactionRegister', { methodPay: [user?.isOpenFace ? '' : 'face', user?.isOpenOTP ? '' : 'otp'] })}
+                >
+                    <MaterialIcons name="payment" size={24} color="white" />
+                    <Text style={styles.buttonText}>ĐĂNG KÝ GIAO DỊCH</Text>
+                </TouchableOpacity>
+            }
 
             <TouchableOpacity
                 style={styles.registerButton}

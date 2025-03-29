@@ -21,20 +21,21 @@ export default function LoginScreen() {
         setLoading(true);
 
         try {
-            const res: any = await login(newData);
-            console.log(res)
+            // const res: any = await login(newData);
+            (navigation as any).replace('Home');
 
-            Alert.alert(
-                'Thông báo',
-                'Đăng nhập thành công',
-                [{
-                    text: 'Tiếp tục', onPress: () => {
-                        setTimeout(() => {
-                            (navigation as any).replace('Home');
-                        }, 1000);
-                    }
-                }]
-            );
+
+            // Alert.alert(
+            //     'Thông báo',
+            //     'Đăng nhập thành công',
+            //     [{
+            //         text: 'Tiếp tục', onPress: () => {
+            //             setTimeout(() => {
+            //                 (navigation as any).replace('Home', { user: res });
+            //             }, 1000);
+            //         }
+            //     }]
+            // );
 
         } catch (error: any) {
             Alert.alert('Đăng nhập thất bại');

@@ -83,7 +83,7 @@ export default function FaceCaptureScreen() {
                     <View style={styles.actionButtons}>
                         <TouchableOpacity
                             style={styles.confirmButton}
-                            onPress={() => (navigation as any).replace('RegisterPin')}
+                            onPress={() => (navigation as any).replace('FaceCaptureSuccess')}
                         >
                             <Text style={styles.buttonText}>TIẾP TỤC</Text>
                         </TouchableOpacity>

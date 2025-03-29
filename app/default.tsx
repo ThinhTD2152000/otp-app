@@ -23,14 +23,14 @@ const AuthScreen = () => {
                     style={[styles.button, styles.loginButton]}
                     onPress={() => (navigation as any).navigate('Login')}
                 >
-                    <Text style={styles.loginButtonText}>SIGN IN</Text>
+                    <Text style={styles.loginButtonText}>LOGIN IN</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                     style={[styles.button, styles.registerButton]}
                     onPress={() => (navigation as any).navigate('RegisterAccount')}
                 >
-                    <Text style={styles.registerButtonText}>SIGN UP</Text>
+                    <Text style={styles.registerButtonText}>REGISTER</Text>
                 </TouchableOpacity>
             </View>
         </View>

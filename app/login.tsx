@@ -19,15 +19,24 @@ export default function LoginScreen() {
         const newData = { username, password }
 
         setLoading(true);
-        (navigation as any).replace('Home')
+        console.log(newData)
 
-        // try {
-        //     const res: any = await post('/auth/login', newData, {});
-        // } catch (error: any) {
-        //     Alert.alert('Đăng nhập thất bại');
-        // } finally {
-        //     setLoading(false);
-        // }
+        setTimeout(() => {
+            (navigation as any).replace('Home');
+        }, 1000);
+        try {
+            const res: any = await post('/auth/login', newData, {});
+            console.log("success")
+            Alert.alert(
+                'Thông báo',
+                'Đăng nhập thành công',
+            );
+        } catch (error: any) {
+            Alert.alert('Đăng nhập thất bại');
+        } finally {
+            setLoading(false);
+            console.log("finally")
+        }
     };
 
     return (

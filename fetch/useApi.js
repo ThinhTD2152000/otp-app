@@ -1,5 +1,4 @@
-// services/apiService.js
-import { Alert } from 'react-native';
+
 
 const BASE_URL = 'http://192.168.110.220:3002';
 
@@ -18,25 +17,32 @@ const fetchData = async (endpoint, options = {}) => {
       body: body ? JSON.stringify(body) : undefined,
     });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Request failed');
+    let responseData;
+    const contentType = response.headers.get('content-type');
+
+    if (contentType && contentType.includes('application/json')) {
+      responseData = await response.json();
+    } else {
+      responseData = await response.text(); // Tránh lỗi nếu không phải JSON
     }
 
-    return await response.json();
+    if (!response.ok) {
+      throw new Error(responseData?.message || 'Request failed');
+    }
+
+    return responseData;
   } catch (error) {
     console.error('API Error:', error);
-
-    Alert.alert('Lỗi', error.message || 'Đã có lỗi xảy ra');
-
     throw error;
   }
 };
 
 //  GET
-export const get = (endpoint, headers) =>
-  fetchData(endpoint, { method: 'GET', headers });
+export const get = async (endpoint, headers = {}) => {
+  return await fetchData(endpoint, { method: 'GET', headers });
+};
 
 //  POST
-export const post = (endpoint, body, headers) =>
-  fetchData(endpoint, { method: 'POST', body, headers });
+export const post = async (endpoint, body, headers = {}) => {
+  return await fetchData(endpoint, { method: 'POST', body, headers });
+};

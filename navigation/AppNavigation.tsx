@@ -20,6 +20,7 @@ import TransferSuccess from '@/app/transfer-bank';
 import TransferConfirmFace from '@/app/transfer-confirm-face';
 import TransferConfirmOTP from '@/app/transfer-confirm-otp';
 import TransferSendOTP from '@/app/tranfer-send-otp';
+import FaceCaptureSuccess from '@/app/face-capture-success';
 
 const Stack = createNativeStackNavigator();
 
@@ -46,6 +47,7 @@ export default function AppNavigator() {
             <Stack.Screen name="TransferConfirmFace" component={TransferConfirmFace} />
             <Stack.Screen name="TransferConfirmOTP" component={TransferConfirmOTP} />
             <Stack.Screen name="TransferSendOTP" component={TransferSendOTP} />
+            <Stack.Screen name="FaceCaptureSuccess" component={FaceCaptureSuccess} />
         </Stack.Navigator>
     );
 }

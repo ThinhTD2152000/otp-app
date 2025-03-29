@@ -30,7 +30,7 @@ const RegisterAccountScreen = () => {
                 if (!value) error = 'Vui lòng nhập email';
                 else if (!/^\S+@\S+\.\S+$/.test(value)) error = 'Email không hợp lệ';
                 break;
-            case 'phone':
+            case 'phoneNumber':
                 if (!value) error = 'Vui lòng nhập số điện thoại';
                 else if (!/^\d{10,11}$/.test(value)) error = 'Số điện thoại 10-11 số';
                 break;
@@ -82,7 +82,6 @@ const RegisterAccountScreen = () => {
         const { confirmPassword, ...newData } = form;
 
         setIsSubmitting(true);
-
 
         try {
             await post('/auth/register', newData, {})
@@ -140,17 +139,17 @@ const RegisterAccountScreen = () => {
                 {/* Số điện thoại */}
                 <View>
                     <TextInput
-                        style={[styles.input, errors.phone && styles.inputError]}
+                        style={[styles.input, errors.phoneNumber && styles.inputError]}
                         placeholder="Số điện thoại"
                         keyboardType="phone-pad"
-                        value={form.phone}
-                        onChangeText={(text) => handleChange('phone', text)}
+                        value={form.phoneNumber}
+                        onChangeText={(text) => handleChange('phoneNumber', text)}
                         onBlur={() => setErrors((prev: any) => ({
                             ...prev,
-                            phone: validateField('phone', form.phone)
+                            phoneNumber: validateField('phoneNumber', form.phoneNumber)
                         }))}
                     />
-                    {errors.phone && <Text style={styles.errorText}>{errors.phone}</Text>}
+                    {errors.phoneNumber && <Text style={styles.errorText}>{errors.phoneNumber}</Text>}
                 </View>
 
                 {/* Mật khẩu */}

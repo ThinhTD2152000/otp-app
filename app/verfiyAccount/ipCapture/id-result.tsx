@@ -50,7 +50,7 @@ const IDCardResultScreen = ({ route }: { route: { params: { ocrData: any } } }) 
                 {
                     'Content-Type': 'multipart/form-data'
 
-                })
+                }, true)
             console.log(res)
         } catch (error) {
             throw error

@@ -16,7 +16,7 @@ export const getCurrentToken = () => {
 };
 
 const fetchData = async (endpoint, options = {}) => {
-  const { method = 'GET', headers = {}, body } = options;
+  const { method = 'GET', headers = {}, body, isFileUpload = false } = options;
 
   console.log('token:', authToken)
 
@@ -26,11 +26,16 @@ const fetchData = async (endpoint, options = {}) => {
   };
 
   try {
-    const response = await fetch(`${BASE_URL}/${endpoint}`, {
+    const fetchOptions  = {
       method,
       headers: { ...defaultHeaders, ...headers },
-      body: body ? JSON.stringify(body) : undefined,
-    });
+    };
+
+    if (body) {
+      fetchOptions.body = isFileUpload ? body : JSON.stringify(body);
+    }
+
+    const response = await fetch(`${BASE_URL}/${endpoint}`, fetchOptions);
     
 
     const contentType = response.headers.get('content-type');
@@ -64,6 +69,6 @@ const fetchData = async (endpoint, options = {}) => {
 
 // Các phương thức HTTP cơ bản
 export const get = async (endpoint, headers = {}) => await fetchData(endpoint, { method: 'GET', headers });
-export const post = async (endpoint, body, headers = {}) =>  await fetchData(endpoint, { method: 'POST', body, headers });
+export const post = async (endpoint, body, headers = {}, isFileUpload = false) =>  await fetchData(endpoint, { method: 'POST', body, headers, isFileUpload });
 export const put = async (endpoint, body, headers = {}) =>await  fetchData(endpoint, { method: 'PUT', body, headers });
 export const del = async (endpoint, headers = {}) => await fetchData(endpoint, { method: 'DELETE', headers });

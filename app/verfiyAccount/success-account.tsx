@@ -13,12 +13,12 @@ const RegistrationSuccessScreen = () => {
             </View>
 
             {/* Tiêu đề */}
-            <Text style={styles.title}>ĐĂNG KÝ THÀNH CÔNG!</Text>
+            <Text style={styles.title}>SUCCESSFULLY REGISTERED!</Text>
 
             {/* Mô tả */}
             <Text style={styles.description}>
-                Chúc mừng bạn đã đăng ký tài khoản thành công.
-                {'\n'}Hãy bắt đầu trải nghiệm ứng dụng ngay nào!
+                Congratulations! You have successfully registered your account.
+                {'\n'}Start exploring the app now!
             </Text>
 
             {/* Ảnh minh họa */}

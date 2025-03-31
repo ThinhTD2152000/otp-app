@@ -1,4 +1,4 @@
-const BASE_URL = 'http://192.168.110.220:3002';
+const BASE_URL = 'http://10.0.2.2:3002';
 
 // Biến lưu trữ token trong memory
 let authToken = null;
@@ -18,15 +18,15 @@ export const getCurrentToken = () => {
 const fetchData = async (endpoint, options = {}) => {
   const { method = 'GET', headers = {}, body, isFileUpload = false } = options;
 
-  console.log('token:', authToken)
+  console.log('token:', authToken);
 
   const defaultHeaders = {
     'Content-Type': 'application/json',
-    ...(authToken && { 'Authorization': `Bearer ${authToken}` }),
+    ...(authToken && { Authorization: `Bearer ${authToken}` }),
   };
 
   try {
-    const fetchOptions  = {
+    const fetchOptions = {
       method,
       headers: { ...defaultHeaders, ...headers },
     };
@@ -36,7 +36,6 @@ const fetchData = async (endpoint, options = {}) => {
     }
 
     const response = await fetch(`${BASE_URL}/${endpoint}`, fetchOptions);
-    
 
     const contentType = response.headers.get('content-type');
     let responseData;
@@ -48,27 +47,36 @@ const fetchData = async (endpoint, options = {}) => {
     }
 
     if (!response.ok) {
-      const errorMessage = responseData?.message || 
-                         responseData?.error || 
-                         `Request failed with status ${response.status}`;
+      const errorMessage =
+        responseData?.message ||
+        responseData?.error ||
+        `Request failed with status ${response.status}`;
       throw new Error(errorMessage);
     }
 
     return responseData;
   } catch (error) {
     console.error('API Error:', error.message);
-    
+
     // Tự động đăng xuất nếu token hết hạn
     if (error.message.includes('401')) {
       clearAuthToken();
     }
-    
+
     throw error;
   }
 };
 
 // Các phương thức HTTP cơ bản
-export const get = async (endpoint, headers = {}) => await fetchData(endpoint, { method: 'GET', headers });
-export const post = async (endpoint, body, headers = {}, isFileUpload = false) =>  await fetchData(endpoint, { method: 'POST', body, headers, isFileUpload });
-export const put = async (endpoint, body, headers = {}) =>await  fetchData(endpoint, { method: 'PUT', body, headers });
-export const del = async (endpoint, headers = {}) => await fetchData(endpoint, { method: 'DELETE', headers });
+export const get = async (endpoint, headers = {}) =>
+  await fetchData(endpoint, { method: 'GET', headers });
+export const post = async (
+  endpoint,
+  body,
+  headers = {},
+  isFileUpload = false
+) => await fetchData(endpoint, { method: 'POST', body, headers, isFileUpload });
+export const put = async (endpoint, body, headers = {}) =>
+  await fetchData(endpoint, { method: 'PUT', body, headers });
+export const del = async (endpoint, headers = {}) =>
+  await fetchData(endpoint, { method: 'DELETE', headers });

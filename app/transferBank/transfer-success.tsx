@@ -14,9 +14,9 @@ const TransactionSuccessScreen = () => {
     const checkBalance = () => {
         if (transferAmount > currentBalance) {
             Alert.alert(
-                'Thông báo',
-                'Số dư không đủ để thực hiện giao dịch',
-                [{ text: 'Đã hiểu', onPress: () => console.log('OK Pressed') }]
+                'Notification',
+                'Insufficient balance to complete the transaction',
+                [{ text: 'Understood', onPress: () => console.log('OK Pressed') }]
             );
         }
     };
@@ -24,9 +24,9 @@ const TransactionSuccessScreen = () => {
     const handleContinue = () => {
         if (transferAmount > currentBalance) {
             Alert.alert(
-                'Lỗi',
-                'Số dư trong tài khoản không đủ để thực hiện giao dịch này',
-                [{ text: 'Đã hiểu' }]
+                'Error',
+                'Insufficient funds in the account to complete this transaction',
+                [{ text: 'Understood' }]
             );
             return;
         }
@@ -37,7 +37,7 @@ const TransactionSuccessScreen = () => {
             setIsProcessing(false);
             // Chuyển sang màn hình xác nhận thành công
             // navigation.navigate('TransactionSuccess');
-            Alert.alert('Thành công', 'Giao dịch đã được thực hiện');
+            Alert.alert('Success', 'The transaction has been completed');
         }, 1500);
     };
 

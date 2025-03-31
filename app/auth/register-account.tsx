@@ -36,8 +36,6 @@ const RegisterAccountScreen = () => {
                 break;
             case 'password':
                 if (!value) error = 'Please enter a password';
-                else if (value.length < 8) error = 'Password must be at least 8 characters long';
-                else if (!/[A-Z]/.test(value)) error = 'Must contain at least 1 uppercase letter';
                 else if (!/[0-9]/.test(value)) error = 'Must contain at least 1 number';
                 break;
             case 'confirmPassword':
@@ -157,7 +155,7 @@ const RegisterAccountScreen = () => {
                 <View>
                     <TextInput
                         style={[styles.input, errors.password && styles.inputError]}
-                        placeholder="Password (at least 8 characters, including a number and an uppercase letter)"
+                        placeholder="Password"
                         secureTextEntry
                         value={form.password}
                         onChangeText={(text) => handleChange('password', text)}

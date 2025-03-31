@@ -58,8 +58,7 @@ export default function IDCaptureScreen() {
                 (navigation as any).replace('IdCardResult', { ocrData: result.assets[0].uri });
             }
         } catch (error) {
-            console.error('Camera Error:', error);
-            Alert.alert('Lỗi', 'Không thể mở camera. Vui lòng thử lại.');
+            Alert.alert('Error', 'Unable to open the camera');
         } finally {
             setIsLoading(false);
         }

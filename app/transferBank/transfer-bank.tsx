@@ -45,7 +45,7 @@ const TransferSuccess = () => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.headerTitle}>Chọn người thụ hưởng</Text>
+            <Text style={styles.headerTitle}>Select Beneficiary</Text>
 
             {/* Ô chọn ngân hàng */}
             <TouchableOpacity
@@ -53,7 +53,7 @@ const TransferSuccess = () => {
                 onPress={() => setBankModalVisible(true)}
             >
                 <Text style={selectedBank ? styles.bankText : styles.placeholderText}>
-                    {selectedBank || 'Chọn ngân hàng thụ hưởng'}
+                    {selectedBank || 'Select Beneficiary Bank'}
                 </Text>
                 <MaterialIcons name="arrow-drop-down" size={24} color="#666" />
             </TouchableOpacity>
@@ -66,7 +66,7 @@ const TransferSuccess = () => {
             >
                 <View style={styles.modalView}>
                     <View style={styles.modalHeader}>
-                        <Text style={styles.modalTitle}>Chọn ngân hàng thụ hưởng</Text>
+                        <Text style={styles.modalTitle}>Select Beneficiary Bank</Text>
                         <TouchableOpacity onPress={() => setBankModalVisible(false)}>
                             <MaterialIcons name="close" size={24} color="#333" />
                         </TouchableOpacity>
@@ -77,7 +77,7 @@ const TransferSuccess = () => {
                         <MaterialIcons name="search" size={20} color="#999" />
                         <TextInput
                             style={styles.searchInput}
-                            placeholder="Tìm ngân hàng..."
+                            placeholder="Search for a bank..."
                             value={searchText}
                             onChangeText={setSearchText}
                             autoFocus={true}
@@ -106,7 +106,7 @@ const TransferSuccess = () => {
 
             {/* Nút chuyển tiền nhanh */}
             <View style={styles.switchRow}>
-                <Text style={styles.switchLabel}>Chuyển tiền nhanh</Text>
+                <Text style={styles.switchLabel}>Fast transfer</Text>
                 <Switch
                     value={isFastTransfer}
                     onValueChange={setIsFastTransfer}
@@ -117,10 +117,10 @@ const TransferSuccess = () => {
 
             {/* Ô nhập số tài khoản (chỉ số) */}
             <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Số tài khoản</Text>
+                <Text style={styles.inputLabel}>Account number</Text>
                 <TextInput
                     style={styles.textInput}
-                    placeholder="Chỉ nhập số"
+                    placeholder="Numbers"
                     value={accountNumber}
                     onChangeText={setAccountNumber}
                     keyboardType="number-pad"
@@ -129,10 +129,10 @@ const TransferSuccess = () => {
 
             {/* Ô nhập tên chủ tài khoản (chỉ chữ) */}
             <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Tên người thụ hưởng</Text>
+                <Text style={styles.inputLabel}>Beneficiary name</Text>
                 <TextInput
                     style={styles.textInput}
-                    placeholder="Nhập tên đầy đủ"
+                    placeholder="Enter full name"
                     value={accountName}
                     onChangeText={setAccountName}
                 />
@@ -144,7 +144,7 @@ const TransferSuccess = () => {
                 onPress={handleContinue}
                 disabled={!accountNumber || !accountName || !selectedBank}
             >
-                <Text style={styles.continueText}>TIẾP TỤC</Text>
+                <Text style={styles.continueText}>NEXT</Text>
             </TouchableOpacity>
         </View>
     );

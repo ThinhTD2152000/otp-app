@@ -15,15 +15,15 @@ const PinRegistrationScreen = () => {
         if (step === 2 && confirmPin.length === 4) {
             if (pin === confirmPin) {
                 Alert.alert(
-                    'Thành công',
-                    'Đăng ký PIN thành công',
+                    'Success',
+                    'PIN registration successful',
                     [{ text: 'OK', onPress: () => (navigation as any).replace('SuccessAccount') }]
                 );
                 // Lưu PIN vào AsyncStorage hoặc state management ở đây
             } else {
-                Alert.alert('Lỗi', 'PIN không khớp. Vui lòng thử lại', [
+                Alert.alert('Error', 'PIN does not match. Please try again', [
                     {
-                        text: 'Đồng ý',
+                        text: 'OK',
                         onPress: () => {
                             setPin('');
                             setConfirmPin('');
@@ -52,13 +52,6 @@ const PinRegistrationScreen = () => {
         }
     };
 
-    const checkPinStrength = (pin: any) => {
-        if (pin.length < 4) return 'weak';
-        if (/^(\d)\1+$/.test(pin)) return 'weak'; // Tất cả số giống nhau
-        if ('0123456789'.includes(pin) || '9876543210'.includes(pin)) return 'weak';
-        return 'strong';
-    };
-
     const renderDots = () => {
         const length = step === 1 ? pin.length : confirmPin.length;
         return (
@@ -79,10 +72,10 @@ const PinRegistrationScreen = () => {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>
-                {step === 1 ? 'Tạo mã PIN mới' : 'Xác nhận mã PIN'}
+                {step === 1 ? 'Create a new PIN' : 'Confirm PIN'}
             </Text>
             <Text style={styles.subtitle}>
-                {step === 1 ? 'Nhập 4 chữ số' : 'Nhập lại mã PIN để xác nhận'}
+                {step === 1 ? 'Enter 4 digits' : 'Re-enter PIN to confirm'}
             </Text>
 
             {renderDots()}

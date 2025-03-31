@@ -18,7 +18,7 @@ export default function FaceCaptureScreen() {
         try {
             const { status } = await ImagePicker.requestCameraPermissionsAsync();
             if (status !== 'granted') {
-                Alert.alert('Thông báo', 'Vui lòng cấp quyền truy cập camera');
+                Alert.alert('Notification', 'Please grant camera access');
                 return;
             }
 
@@ -34,7 +34,7 @@ export default function FaceCaptureScreen() {
                 setFacePhoto(result.assets[0].uri);
             }
         } catch (error) {
-            Alert.alert('Lỗi', 'Không thể mở camera');
+            Alert.alert('Error', 'Unable to open the camera');
         } finally {
             setIsLoading(false);
         }
@@ -68,7 +68,7 @@ export default function FaceCaptureScreen() {
         <View style={styles.container}>
             {!facePhoto ? (
                 <View style={styles.captureContainer}>
-                    <Text style={styles.guideText}>CĂN CHỈNH KHUÔN MẶT VÀO KHUNG HÌNH</Text>
+                    <Text style={styles.guideText}>ALIGN YOUR FACE WITHIN THE FRAME</Text>
                     <View style={styles.guideFrame}>
                         <View style={styles.faceOutline} >
                             <AntDesign
@@ -90,14 +90,14 @@ export default function FaceCaptureScreen() {
                         ) : (
                             <>
                                 <MaterialIcons name="photo-camera" size={24} color="white" />
-                                <Text style={styles.buttonText}>TIẾP TỤC</Text>
+                                <Text style={styles.buttonText}>NEXT</Text>
                             </>
                         )}
                     </TouchableOpacity>
                 </View>
             ) : (
                 <View style={styles.previewContainer}>
-                    <Text style={styles.textVerify}>ĐANG XÁC THỰC...</Text>
+                    <Text style={styles.textVerify}>AUTHENTICATING...</Text>
                     {/* <Text style={styles.textSuccess}>Xác thực khuôn mặt thành công</Text> */}
 
                     <Image source={{ uri: facePhoto }} style={styles.previewImage} />
@@ -109,7 +109,7 @@ export default function FaceCaptureScreen() {
                             style={styles.confirmButton}
                             onPress={() => (navigation as any).replace('FaceCaptureSuccess')}
                         >
-                            <Text style={styles.buttonText}>TIẾP TỤC</Text>
+                            <Text style={styles.buttonText}>NEXT</Text>
                         </TouchableOpacity>
                     </View>
                 </View>

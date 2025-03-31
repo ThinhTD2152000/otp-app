@@ -12,21 +12,21 @@ const TransactionMethodScreen = ({ route }: { route: { params: { methodPay?: any
     const methods = [
         {
             id: 'face',
-            title: 'Đăng ký bằng khuôn mặt',
+            title: 'Sign up with Face Recognition',
             icon: 'face',
-            description: 'Xác thực nhanh chóng bằng nhận diện khuôn mặt'
+            description: 'Easily authenticate using facial recognition'
         },
         {
             id: 'otp',
-            title: 'Đăng ký bằng Smart OTP',
+            title: 'Sign up with Smart OTP',
             icon: 'sms',
-            description: 'Xác nhận PIN để tạo Smart OTP tự động'
+            description: 'Enter your PIN to generate a Smart OTP automatically'
         }
     ];
 
     const handleContinue = () => {
         if (!selectedMethod) {
-            Alert.alert('Thông báo', 'Vui lòng chọn phương thức đăng ký');
+            Alert.alert('Notification', 'Please select a registration method');
             return;
         }
         (navigation as any).navigate(selectedMethod === 'face' ? 'FaceRegister' : 'SmartOtpRegister');
@@ -36,12 +36,12 @@ const TransactionMethodScreen = ({ route }: { route: { params: { methodPay?: any
         <SafeAreaView style={styles.container}>
             {/* Header */}
             <View style={styles.header}>
-                <Text style={styles.title}>ĐĂNG KÝ GIAO DỊCH</Text>
+                <Text style={styles.title}>REGISTER TRANSACTION</Text>
             </View>
 
             {/* Nội dung chính */}
             <View style={styles.content}>
-                <Text style={styles.subTitle}>Chọn phương thức đăng ký</Text>
+                <Text style={styles.subTitle}>Select Registration Method</Text>
 
                 {methods.map((method) => (
                     methodPay.includes(method.id) &&
@@ -90,7 +90,7 @@ const TransactionMethodScreen = ({ route }: { route: { params: { methodPay?: any
                 onPress={handleContinue}
                 disabled={!selectedMethod}
             >
-                <Text style={styles.continueText}>TIẾP TỤC</Text>
+                <Text style={styles.continueText}>NEXT</Text>
             </TouchableOpacity>
         </SafeAreaView>
     );

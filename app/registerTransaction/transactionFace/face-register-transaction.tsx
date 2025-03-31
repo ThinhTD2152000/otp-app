@@ -18,7 +18,7 @@ export default function FaceRegisterTransaction() {
         try {
             const { status } = await ImagePicker.requestCameraPermissionsAsync();
             if (status !== 'granted') {
-                Alert.alert('Thông báo', 'Vui lòng cấp quyền truy cập camera');
+                Alert.alert('Notification', 'Please grant permission to access the camera');
                 return;
             }
 
@@ -34,7 +34,7 @@ export default function FaceRegisterTransaction() {
                 setFacePhoto(result.assets[0].uri);
             }
         } catch (error) {
-            Alert.alert('Lỗi', 'Không thể mở camera');
+            Alert.alert('Error', 'Cannot open the camera');
         } finally {
             setIsLoading(false);
         }
@@ -44,7 +44,7 @@ export default function FaceRegisterTransaction() {
         <View style={styles.container}>
             {!facePhoto ? (
                 <View style={styles.captureContainer}>
-                    <Text style={styles.guideText}>CĂN CHỈNH KHUÔN MẶT VÀO KHUNG HÌNH</Text>
+                    <Text style={styles.guideText}>ALIGN YOUR FACE WITHIN THE FRAME</Text>
                     <View style={styles.guideFrame}>
                         <View style={styles.faceOutline} >
                             <AntDesign
@@ -66,7 +66,7 @@ export default function FaceRegisterTransaction() {
                         ) : (
                             <>
                                 <MaterialIcons name="photo-camera" size={24} color="white" />
-                                <Text style={styles.buttonText}>TIẾP TỤC</Text>
+                                <Text style={styles.buttonText}>NEXT</Text>
                             </>
                         )}
                     </TouchableOpacity>
@@ -82,7 +82,7 @@ export default function FaceRegisterTransaction() {
                             style={styles.confirmButton}
                             onPress={() => (navigation as any).replace('Home')}
                         >
-                            <Text style={styles.buttonText}>TIẾP TỤC</Text>
+                            <Text style={styles.buttonText}>NEXT</Text>
                         </TouchableOpacity>
                     </View>
                 </View>

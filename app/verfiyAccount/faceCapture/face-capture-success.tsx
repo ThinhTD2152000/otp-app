@@ -8,7 +8,7 @@ const FaceCaptureSuccess = () => {
     return (
         <View style={styles.container}>
             {/* Tiêu đề */}
-            <Text style={styles.title}>XÁC THỰC KHUÔN MẶT THÀNH CÔNG</Text>
+            <Text style={styles.title}>FACE AUTHENTICATION SUCCESSFUL</Text>
 
             {/* Ảnh khuôn mặt */}
             <Image
@@ -18,14 +18,14 @@ const FaceCaptureSuccess = () => {
             />
 
             {/* Thông báo phụ */}
-            <Text style={styles.subText}>Khuôn mặt của bạn đã được xác thực thành công</Text>
+            <Text style={styles.subText}>Your face has been successfully authenticated</Text>
 
             {/* Nút tiếp tục */}
             <TouchableOpacity
                 style={styles.continueButton}
                 onPress={() => (navigation as any).replace('RegisterPin')} // Thay bằng màn hình tiếp theo
             >
-                <Text style={styles.buttonText}>TIẾP TỤC</Text>
+                <Text style={styles.buttonText}>NEXT</Text>
             </TouchableOpacity>
         </View>
     );

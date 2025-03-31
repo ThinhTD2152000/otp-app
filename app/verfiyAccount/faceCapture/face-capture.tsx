@@ -40,6 +40,30 @@ export default function FaceCaptureScreen() {
         }
     };
 
+
+    // fetch api
+    // const handleCompareFace = async () => {
+    //         try {
+    //             const formData: any = new FormData()
+    //             formData.append('image', {
+    //                 url: testImage,
+    //                 type: 'image/jpeg',
+    //                 name: 'cccd.jpg'
+    //             })
+    //             const res = await post('kyc/OCR', formData,
+    //                 {
+    //                     'Content-Type': 'multipart/form-data'
+
+    //                 }, true)
+
+    //             setData(res)
+    //         } catch (error) {
+    //             throw error
+    //         } finally {
+    //             setIsLoading(false)
+    //         }
+    //     }
+
     return (
         <View style={styles.container}>
             {!facePhoto ? (

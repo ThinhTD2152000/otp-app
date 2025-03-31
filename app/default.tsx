@@ -10,7 +10,7 @@ const AuthScreen = () => {
             {/* Phần 1: Logo và Title */}
             <View style={styles.header}>
                 <Image
-                    source={require('../assets/images/logo1.jpg')} // Thay bằng logo của bạn
+                    source={require('@/assets/images/logo1.jpg')} // Thay bằng logo của bạn
                     style={styles.logo}
                     resizeMode="contain"
                 />

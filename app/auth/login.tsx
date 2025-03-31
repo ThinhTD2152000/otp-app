@@ -12,23 +12,23 @@ export default function LoginScreen() {
 
     const handleLogin = async () => {
         if (!username || !password) {
-            Alert.alert('Lỗi', 'Vui lòng nhập đầy đủ thông tin');
+            Alert.alert('Notification', 'Please enter all required information.');
             return;
         }
 
         const newData = { username, password }
 
         setLoading(true);
-
+        console.log(newData)
         try {
             const res: any = await login(newData);
 
 
             Alert.alert(
-                'Thông báo',
-                'Đăng nhập thành công',
+                'Notification',
+                'Login successful',
                 [{
-                    text: 'Tiếp tục', onPress: () => {
+                    text: 'Next', onPress: () => {
                         setTimeout(() => {
                             (navigation as any).replace('Home', { user: res });
                         }, 1000);
@@ -37,7 +37,7 @@ export default function LoginScreen() {
             );
 
         } catch (error: any) {
-            Alert.alert('Đăng nhập thất bại');
+            Alert.alert('Login failed!');
         } finally {
             setLoading(false);
         }
@@ -45,11 +45,11 @@ export default function LoginScreen() {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Đăng Nhập</Text>
+            <Text style={styles.title}>Login</Text>
 
             <TextInput
                 style={styles.input}
-                placeholder="Tên đăng nhập"
+                placeholder="Username"
                 autoCapitalize="none"
                 value={username}
                 onChangeText={setUsername}
@@ -57,19 +57,19 @@ export default function LoginScreen() {
 
             <TextInput
                 style={styles.input}
-                placeholder="Mật khẩu"
+                placeholder="Password"
                 secureTextEntry
                 value={password}
                 onChangeText={setPassword}
             />
 
             <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
-                <Text style={styles.buttonText}>{loading ? 'Đang đăng nhập...' : 'Đăng Nhập'}</Text>
+                <Text style={styles.buttonText}>{loading ? 'Logging in...' : 'Login'}</Text>
             </TouchableOpacity>
             <View style={styles.loginPromptContainer}>
-                <Text style={styles.loginPromptText}>Bạn chưa có tài khoản? </Text>
+                <Text style={styles.loginPromptText}>Don't have an account? </Text>
                 <TouchableOpacity onPress={() => (navigation as any).navigate('RegisterAccount')}>
-                    <Text style={styles.loginLink}>Hãy đăng ký</Text>
+                    <Text style={styles.loginLink}>Register</Text>
                 </TouchableOpacity>
             </View>
         </View>

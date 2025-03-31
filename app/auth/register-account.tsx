@@ -22,27 +22,27 @@ const RegisterAccountScreen = () => {
 
         switch (name) {
             case 'username':
-                if (!value) error = 'Vui lòng nhập tên đăng nhập';
-                else if (value.length < 6) error = 'Tên đăng nhập ít nhất 6 ký tự';
-                else if (!/^[a-zA-Z0-9_]+$/.test(value)) error = 'Không chứa ký tự đặc biệt';
+                if (!value) error = 'Please enter a username';
+                else if (value.length < 6) error = 'Username must be at least 6 characters long';
+                else if (!/^[a-zA-Z0-9_]+$/.test(value)) error = 'No special characters allowed';
                 break;
             case 'email':
-                if (!value) error = 'Vui lòng nhập email';
-                else if (!/^\S+@\S+\.\S+$/.test(value)) error = 'Email không hợp lệ';
+                if (!value) error = 'Please enter an email';
+                else if (!/^\S+@\S+\.\S+$/.test(value)) error = 'Invalid email format';
                 break;
             case 'phoneNumber':
-                if (!value) error = 'Vui lòng nhập số điện thoại';
-                else if (!/^\d{10,11}$/.test(value)) error = 'Số điện thoại 10-11 số';
+                if (!value) error = 'Please enter a phone number';
+                else if (!/^\d{10,11}$/.test(value)) error = 'Phone number must be 10-11 digits';
                 break;
             case 'password':
-                if (!value) error = 'Vui lòng nhập mật khẩu';
-                else if (value.length < 8) error = 'Mật khẩu ít nhất 8 ký tự';
-                else if (!/[A-Z]/.test(value)) error = 'Cần ít nhất 1 chữ hoa';
-                else if (!/[0-9]/.test(value)) error = 'Cần ít nhất 1 số';
+                if (!value) error = 'Please enter a password';
+                else if (value.length < 8) error = 'Password must be at least 8 characters long';
+                else if (!/[A-Z]/.test(value)) error = 'Must contain at least 1 uppercase letter';
+                else if (!/[0-9]/.test(value)) error = 'Must contain at least 1 number';
                 break;
             case 'confirmPassword':
-                if (!value) error = 'Vui lòng xác nhận mật khẩu';
-                else if (value !== form.password) error = 'Mật khẩu không khớp';
+                if (!value) error = 'Please confirm your password';
+                else if (value !== form.password) error = 'Passwords do not match';
                 break;
         }
 
@@ -84,15 +84,16 @@ const RegisterAccountScreen = () => {
         setIsSubmitting(true);
 
         try {
-            await register(newData)
-            Alert.alert('Thành công', 'Tài khoản đã được tạo!', [
+            await register(newData);
+            Alert.alert('Success', 'Account has been created!', [
                 { text: 'OK', onPress: () => (navigation as any).navigate('Login') }
             ]);
         } catch (error: any) {
-            Alert.alert('Lỗi', error.message || 'Đăng ký thất bại');
+            Alert.alert('Error', error.message || 'Registration failed');
         } finally {
             setIsSubmitting(false);
         }
+
     };
 
     return (
@@ -101,13 +102,13 @@ const RegisterAccountScreen = () => {
             style={styles.container}
         >
             <View style={styles.innerContainer}>
-                <Text style={styles.title}>Đăng ký tài khoản</Text>
+                <Text style={styles.title}>Register Account</Text>
 
                 {/* Tên đăng nhập */}
                 <View>
                     <TextInput
                         style={[styles.input, errors.username && styles.inputError]}
-                        placeholder="Tên đăng nhập"
+                        placeholder="Username"
                         value={form.username}
                         onChangeText={(text) => handleChange('username', text)}
                         onBlur={() => setErrors((prev: any) => ({
@@ -140,7 +141,7 @@ const RegisterAccountScreen = () => {
                 <View>
                     <TextInput
                         style={[styles.input, errors.phoneNumber && styles.inputError]}
-                        placeholder="Số điện thoại"
+                        placeholder="Phone"
                         keyboardType="phone-pad"
                         value={form.phoneNumber}
                         onChangeText={(text) => handleChange('phoneNumber', text)}
@@ -156,7 +157,7 @@ const RegisterAccountScreen = () => {
                 <View>
                     <TextInput
                         style={[styles.input, errors.password && styles.inputError]}
-                        placeholder="Mật khẩu (ít nhất 8 ký tự, có số và chữ hoa)"
+                        placeholder="Password (at least 8 characters, including a number and an uppercase letter)"
                         secureTextEntry
                         value={form.password}
                         onChangeText={(text) => handleChange('password', text)}
@@ -172,7 +173,7 @@ const RegisterAccountScreen = () => {
                 <View>
                     <TextInput
                         style={[styles.input, errors.confirmPassword && styles.inputError]}
-                        placeholder="Xác nhận mật khẩu"
+                        placeholder="Confirm password"
                         secureTextEntry
                         value={form.confirmPassword}
                         onChangeText={(text) => handleChange('confirmPassword', text)}
@@ -191,14 +192,14 @@ const RegisterAccountScreen = () => {
                     disabled={isSubmitting}
                 >
                     <Text style={styles.registerButtonText}>
-                        {isSubmitting ? 'Đang xử lý...' : 'Đăng ký'}
+                        {isSubmitting ? 'Processing...' : 'Register'}
                     </Text>
                 </TouchableOpacity>
 
                 <View style={styles.loginPromptContainer}>
-                    <Text style={styles.loginPromptText}>Bạn đã có tài khoản? </Text>
+                    <Text style={styles.loginPromptText}>Do you have account? </Text>
                     <TouchableOpacity onPress={() => (navigation as any).navigate('Login')}>
-                        <Text style={styles.loginLink}>Đăng nhập ngay</Text>
+                        <Text style={styles.loginLink}>Login</Text>
                     </TouchableOpacity>
                 </View>
             </View>

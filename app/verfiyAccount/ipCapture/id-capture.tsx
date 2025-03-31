@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Image, TouchableOpacity, Text, ActivityIndicator, Alert, Dimensions } from 'react-native';
+import { View, Image, TouchableOpacity, Text, ActivityIndicator, Alert, Dimensions, Linking } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
@@ -15,26 +15,51 @@ export default function IDCaptureScreen() {
     const captureID = async () => {
         setIsLoading(true);
         try {
-            const { status } = await ImagePicker.requestCameraPermissionsAsync();
-            if (status !== 'granted') {
-                Alert.alert('Thông báo', 'Vui lòng cấp quyền truy cập camera');
-                return;
+            // Kiểm tra quyền hiện tại
+            const { status: existingStatus } = await ImagePicker.getCameraPermissionsAsync();
+            let finalStatus = existingStatus;
+
+            // Nếu chưa có quyền, yêu cầu quyền
+            if (existingStatus !== 'granted') {
+                const { status } = await ImagePicker.requestCameraPermissionsAsync();
+                finalStatus = status;
+
+                // Nếu người dùng từ chối, hiển thị popup giải thích
+                if (finalStatus !== 'granted') {
+                    Alert.alert(
+                        'Camera Access Permission',
+                        'The app requires camera access to take pictures. Please grant permission in Settings.',
+                        [
+                            {
+                                text: 'Cancel',
+                                style: 'cancel',
+                            },
+                            {
+                                text: 'Open Settings',
+                                onPress: () => Linking.openSettings(),
+                            },
+                        ]
+                    );
+                    setIsLoading(false);
+                    return;
+                }
             }
 
-            const result: any = await ImagePicker.launchCameraAsync({
+            // Nếu đã có quyền, mở camera
+            const result = await ImagePicker.launchCameraAsync({
                 mediaType: ImagePicker.MediaTypeOptions.Images,
                 allowsEditing: false,
                 aspect: [3, 2],
-                quality: 0.8
+                quality: 0.8,
             });
 
             if (!result.canceled) {
                 setIdPhoto(result.assets[0].uri);
+                (navigation as any).replace('IdCardResult', { ocrData: result.assets[0].uri });
             }
-
-            (navigation as any).replace('IdCardResult', { ocrData: result.assets[0].uri })
         } catch (error) {
-            Alert.alert('Lỗi', 'Không thể mở camera');
+            console.error('Camera Error:', error);
+            Alert.alert('Lỗi', 'Không thể mở camera. Vui lòng thử lại.');
         } finally {
             setIsLoading(false);
         }
@@ -62,7 +87,7 @@ export default function IDCaptureScreen() {
                         marginBottom: 5,
                         textAlign: 'center'
                     }}>
-                        CHỤP MẶT TRƯỚC CCCD/HỘ CHIẾU
+                        CAPTURE FRONT SIDE OF ID CARD/PASSPORT
                     </Text>
                     <Text style={{
                         fontSize: 14,
@@ -70,7 +95,7 @@ export default function IDCaptureScreen() {
                         marginBottom: 30,
                         textAlign: 'center'
                     }}>
-                        Đảm bảo ảnh nằm gọn trong khung hình
+                        Make sure the image fits within the frame.
                     </Text>
 
                     <View style={{
@@ -136,7 +161,7 @@ export default function IDCaptureScreen() {
                                 fontSize: 16,
                                 fontWeight: '600'
                             }}>
-                                TIẾP TỤC
+                                NEXT
                             </Text>
                         </>
                     )}

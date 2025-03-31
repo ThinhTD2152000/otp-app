@@ -1,9 +1,9 @@
-import { get, getCurrentToken, post, setAuthToken } from './apiClient';
+import { get, post, setAuthToken } from './apiClient';
 
 export const login = async (credentials) => {
   try {
-    const response = await post('auth/login', credentials);
-    console.log(response.token)
+    const response = await post('auth/login', credentials, false);
+    console.log(credentials)
     setAuthToken(response.token); // Lưu token sau khi đăng nhập thành công
    return await getMe()
   } catch (error) {

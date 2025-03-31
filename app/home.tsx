@@ -7,12 +7,13 @@ const HomeScreen = ({ route }: { route: { params?: { user?: any } } }) => {
     const navigation = useNavigation()
 
     const user: any = route.params?.user
+    console.log(user)
 
     return (
         <SafeAreaView style={styles.container}>
             {/* Header với tiêu đề */}
             <View style={styles.header}>
-                <Text style={styles.title}>TRANG CHỦ</Text>
+                <Text style={styles.title}>HOME</Text>
             </View>
 
             {/* Nội dung chính */}
@@ -23,8 +24,9 @@ const HomeScreen = ({ route }: { route: { params?: { user?: any } } }) => {
                     resizeMode="contain"
                 />
 
-                <Text style={styles.welcomeText}>Chào mừng bạn đến với ứng dụng</Text>
-                <Text style={styles.subText}>Bắt đầu đăng ký giao dịch ngay!</Text>
+                <Text style={styles.welcomeText}>Welcome to the app</Text>
+                <Text style={styles.subText}>Start registering for transactions now!</Text>
+
             </View>
 
             {/* Nút đăng ký giao dịch */}
@@ -33,7 +35,7 @@ const HomeScreen = ({ route }: { route: { params?: { user?: any } } }) => {
                 onPress={() => (navigation as any).navigate('IdCapture')}
             >
                 <MaterialIcons name="payment" size={24} color="white" />
-                <Text style={styles.buttonText}>XÁC THỰC TÀI KHOẢN</Text>
+                <Text style={styles.buttonText}>ACCOUNT VERIFICATION</Text>
             </TouchableOpacity>
 
             {
@@ -43,7 +45,7 @@ const HomeScreen = ({ route }: { route: { params?: { user?: any } } }) => {
                     onPress={() => (navigation as any).navigate('TransactionRegister', { methodPay: [user?.isOpenFace ? '' : 'face', user?.isOpenOTP ? '' : 'otp'] })}
                 >
                     <MaterialIcons name="payment" size={24} color="white" />
-                    <Text style={styles.buttonText}>ĐĂNG KÝ GIAO DỊCH</Text>
+                    <Text style={styles.buttonText}>TRANSACTION REGISTRATION</Text>
                 </TouchableOpacity>
             }
 
@@ -52,7 +54,7 @@ const HomeScreen = ({ route }: { route: { params?: { user?: any } } }) => {
                 onPress={() => (navigation as any).navigate('TransferBank')}
             >
                 <MaterialCommunityIcons name="bank-transfer-in" size={26} color="white" />
-                <Text style={styles.buttonText}>CHUYỂN KHOẢN</Text>
+                <Text style={styles.buttonText}>BANK TRANSFER</Text>
             </TouchableOpacity>
         </SafeAreaView>
     );

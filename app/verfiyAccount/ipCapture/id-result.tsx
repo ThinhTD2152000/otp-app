@@ -1,11 +1,15 @@
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { post } from '@/fetch/apiClient';
+import LoadingIndicator from '@/components/Loading';
+import * as FileSystem from 'expo-file-system';
 
 const IDCardResultScreen = ({ route }: { route: { params: { ocrData: any } } }) => {
 
     const testImage = require('@/assets/images/ocr.jpeg')
+    const [data, setData] = useState<any>(null)
+    const [isLoading, setIsLoading] = useState<boolean>(true)
 
     const navigation = useNavigation();
     // const ocrData: any = {
@@ -38,22 +42,28 @@ const IDCardResultScreen = ({ route }: { route: { params: { ocrData: any } } }) 
     ];
 
     const handleOCR = async () => {
+        const fileInfo = await FileSystem.getInfoAsync(ocrData);
         try {
             const formData: any = new FormData()
             formData.append('image', {
-                url: testImage,
+                url: fileInfo,
                 type: 'image/jpeg',
                 name: 'cccd.jpg'
             })
-            console.log(formData)
+            console.log('FormData:', formData);
             const res = await post('kyc/OCR', formData,
                 {
                     'Content-Type': 'multipart/form-data'
 
                 }, true)
             console.log(res)
+
+            setData(res)
         } catch (error) {
+            Alert.alert('Error', 'Failed to process OCR. Please try again.');
             throw error
+        } finally {
+            setIsLoading(false)
         }
     }
 
@@ -65,40 +75,47 @@ const IDCardResultScreen = ({ route }: { route: { params: { ocrData: any } } }) 
     }, []);
 
     return (
-        <ScrollView contentContainerStyle={styles.container}>
-            {/* Phần header */}
-            <View style={styles.header}>
-                <Text style={styles.successTitle}>OCR thành công</Text>
-                {ocrData && (
-                    <Image
-                        source={{ uri: ocrData }}
-                        style={styles.idImage}
-                        resizeMode="contain"
-                    />
-                )}
-            </View>
 
-            {/* Phần thông tin chi tiết */}
-            <View style={styles.infoContainer}>
-                {fields.map((field, index) => (
-                    field.value && (
-                        <View key={index} style={styles.infoRow}>
-                            <Text style={styles.label}>{field.label}:</Text>
-                            <Text style={styles.value}>{field.value}</Text>
-                        </View>
-                    )
-                ))}
-            </View>
+        isLoading ?
+            <View style={styles.containerImage} >
+                <LoadingIndicator />
+                <Text style={styles.loadingText}>Đợi chút...</Text>
+            </View > :
 
-            {/* Button tiếp tục */}
-            <TouchableOpacity
-                style={styles.continueButton}
-                onPress={() => (navigation as any).replace('FaceCapture')}
-            >
-                <Text style={styles.continueButtonText}>Tiếp tục</Text>
-            </TouchableOpacity>
-        </ScrollView>
-    );
+            <ScrollView contentContainerStyle={styles.container}>
+                {/* Phần header */}
+                <View style={styles.header}>
+                    <Text style={styles.successTitle}>OCR thành công</Text>
+                    {ocrData && (
+                        <Image
+                            source={{ uri: ocrData }}
+                            style={styles.idImage}
+                            resizeMode="contain"
+                        />
+                    )}
+                </View>
+
+                {/* Phần thông tin chi tiết */}
+                <View style={styles.infoContainer}>
+                    {fields.map((field, index) => (
+                        field.value && (
+                            <View key={index} style={styles.infoRow}>
+                                <Text style={styles.label}>{field.label}:</Text>
+                                <Text style={styles.value}>{field.value}</Text>
+                            </View>
+                        )
+                    ))}
+                </View>
+
+                {/* Button tiếp tục */}
+                <TouchableOpacity
+                    style={styles.continueButton}
+                    onPress={() => (navigation as any).replace('FaceCapture')}
+                >
+                    <Text style={styles.continueButtonText}>Tiếp tục</Text>
+                </TouchableOpacity>
+            </ScrollView>
+    )
 };
 
 const styles = StyleSheet.create({
@@ -155,6 +172,17 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
+    containerImage: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'white',
+    },
+    loadingText: {
+        marginTop: 16,
+        fontSize: 16,
+        color: '#333', // màu chữ
+    }
 });
 
 export default IDCardResultScreen;

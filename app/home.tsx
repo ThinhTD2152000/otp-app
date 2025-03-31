@@ -1,13 +1,34 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Image, Alert } from 'react-native';
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { post } from '@/fetch/apiClient';
 
 const HomeScreen = ({ route }: { route: { params?: { user?: any } } }) => {
     const navigation = useNavigation()
 
     const user: any = route.params?.user
     console.log(user)
+
+    const handleCreateSession = async () => {
+        try {
+            // Gọi API tạo session
+            const res = await post('kyc/create_session');
+
+            // Kiểm tra phản hồi từ API
+            if (res?.data.access_token) {
+                console.log('session', res?.data.access_token);
+                // Điều hướng đến màn hình TransactionRegister với các phương thức thanh toán
+                (navigation as any).navigate('IdCapture')
+            } else {
+                // Hiển thị thông báo lỗi nếu API trả về không thành công
+                Alert.alert('Error', res?.message || 'Failed to create session.');
+            }
+        } catch (error) {
+            // Xử lý lỗi khi gọi API
+            Alert.alert('Error', 'An error occurred while creating the session. Please try again.');
+        }
+    };
 
     return (
         <SafeAreaView style={styles.container}>
@@ -30,33 +51,44 @@ const HomeScreen = ({ route }: { route: { params?: { user?: any } } }) => {
             </View>
 
             {/* Nút đăng ký giao dịch */}
-            <TouchableOpacity
-                style={styles.registerButton}
-                onPress={() => (navigation as any).navigate('IdCapture')}
-            >
-                <MaterialIcons name="payment" size={24} color="white" />
-                <Text style={styles.buttonText}>ACCOUNT VERIFICATION</Text>
-            </TouchableOpacity>
-
             {
-                !(user?.isOpenOTP && user?.isOpenFace) &&
+                !user?.isPin &&
                 <TouchableOpacity
                     style={styles.registerButton}
-                    onPress={() => (navigation as any).navigate('TransactionRegister', { methodPay: [user?.isOpenFace ? '' : 'face', user?.isOpenOTP ? '' : 'otp'] })}
+                    onPress={handleCreateSession}
+                >
+                    <MaterialIcons name="payment" size={24} color="white" />
+                    <Text style={styles.buttonText}>ACCOUNT VERIFICATION</Text>
+                </TouchableOpacity>
+            }
+
+            {
+                user.isPin &&
+                <TouchableOpacity
+                    style={styles.registerButton}
+                    onPress={() => (navigation as any).navigate('TransactionRegister', {
+                        methodPay: [
+                            user?.isOpenFace ? 'face' : '',
+                            user?.isOpenOTP ? 'otp' : '',
+                        ].filter(Boolean), // Loại bỏ các giá trị rỗng
+                    })}
                 >
                     <MaterialIcons name="payment" size={24} color="white" />
                     <Text style={styles.buttonText}>TRANSACTION REGISTRATION</Text>
                 </TouchableOpacity>
             }
 
-            <TouchableOpacity
-                style={styles.registerButton}
-                onPress={() => (navigation as any).navigate('TransferBank')}
-            >
-                <MaterialCommunityIcons name="bank-transfer-in" size={26} color="white" />
-                <Text style={styles.buttonText}>BANK TRANSFER</Text>
-            </TouchableOpacity>
-        </SafeAreaView>
+            {
+                (user?.isOpenOTP || user?.isOpenFace) &&
+                <TouchableOpacity
+                    style={styles.registerButton}
+                    onPress={() => (navigation as any).navigate('TransferBank')}
+                >
+                    <MaterialCommunityIcons name="bank-transfer-in" size={26} color="white" />
+                    <Text style={styles.buttonText}>BANK TRANSFER</Text>
+                </TouchableOpacity>
+            }
+        </SafeAreaView >
     );
 };
 

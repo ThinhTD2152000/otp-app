@@ -4,12 +4,14 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { post } from '@/fetch/apiClient';
 import LoadingIndicator from '@/components/Loading';
 import * as FileSystem from 'expo-file-system';
+import RNFS from "react-native-fs";
 
 const IDCardResultScreen = ({ route }: { route: { params: { ocrData: any } } }) => {
 
     const testImage = require('@/assets/images/ocr.jpeg')
     const [data, setData] = useState<any>(null)
     const [isLoading, setIsLoading] = useState<boolean>(true)
+
 
     const navigation = useNavigation();
     // const ocrData: any = {
@@ -46,9 +48,9 @@ const IDCardResultScreen = ({ route }: { route: { params: { ocrData: any } } }) 
         try {
             const formData: any = new FormData()
             formData.append('image', {
-                url: fileInfo,
+                url: Image.resolveAssetSource(testImage).uri,
                 type: 'image/jpeg',
-                name: 'cccd.jpg'
+                name: 'ocr.jpeg'
             })
             console.log('FormData:', formData);
             const res = await post('kyc/OCR', formData,
@@ -60,12 +62,15 @@ const IDCardResultScreen = ({ route }: { route: { params: { ocrData: any } } }) 
 
             setData(res)
         } catch (error) {
-            Alert.alert('Error', 'Failed to process OCR. Please try again.');
             throw error
         } finally {
             setIsLoading(false)
         }
     }
+
+
+
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -79,42 +84,72 @@ const IDCardResultScreen = ({ route }: { route: { params: { ocrData: any } } }) 
         isLoading ?
             <View style={styles.containerImage} >
                 <LoadingIndicator />
-                <Text style={styles.loadingText}>Đợi chút...</Text>
+                <Text style={styles.loadingText}>Processing...</Text>
             </View > :
+            (
+                data.data.response_code !== 500 ?
+                    <ScrollView contentContainerStyle={styles.container
+                    } >
+                        {/* Phần header */}
+                        < View style={styles.header} >
+                            <Text style={styles.successTitle}>OCR thành công</Text>
+                            {
+                                ocrData && (
+                                    <Image
+                                        source={{ uri: ocrData }}
+                                        style={styles.idImage}
+                                        resizeMode="contain"
+                                    />
+                                )
+                            }
+                        </View >
 
-            <ScrollView contentContainerStyle={styles.container}>
-                {/* Phần header */}
-                <View style={styles.header}>
-                    <Text style={styles.successTitle}>OCR thành công</Text>
-                    {ocrData && (
+                        {/* Phần thông tin chi tiết */}
+                        < View style={styles.infoContainer} >
+                            {
+                                fields.map((field, index) => (
+                                    field.value && (
+                                        <View key={index} style={styles.infoRow}>
+                                            <Text style={styles.label}>{field.label}:</Text>
+                                            <Text style={styles.value}>{field.value}</Text>
+                                        </View>
+                                    )
+                                ))
+                            }
+                        </View >
+
+                        {/* Button tiếp tục */}
+                        < TouchableOpacity
+                            style={styles.continueButton}
+                            onPress={() => (navigation as any).replace('FaceCapture')}
+                        >
+                            <Text style={styles.continueButtonText}>Tiếp tục</Text>
+                        </TouchableOpacity >
+                    </ScrollView > : <View style={styles.container_error}>
+                        {/* Tiêu đề màu đỏ */}
+                        <Text style={styles.errorTitle_error}>OCR Failed</Text>
+
+                        {/* Hình ảnh thất bại */}
                         <Image
-                            source={{ uri: ocrData }}
-                            style={styles.idImage}
+                            source={require('@/assets/images/notData.jpeg')} // Thay bằng đường dẫn hình ảnh của bạn
+                            style={styles.errorImage_error}
                             resizeMode="contain"
                         />
-                    )}
-                </View>
 
-                {/* Phần thông tin chi tiết */}
-                <View style={styles.infoContainer}>
-                    {fields.map((field, index) => (
-                        field.value && (
-                            <View key={index} style={styles.infoRow}>
-                                <Text style={styles.label}>{field.label}:</Text>
-                                <Text style={styles.value}>{field.value}</Text>
-                            </View>
-                        )
-                    ))}
-                </View>
+                        {/* Thông báo lỗi */}
+                        <Text style={styles.errorMessage_error}>
+                            Unable to recognize information from the image. Please try again with a clearer image.
+                        </Text>
 
-                {/* Button tiếp tục */}
-                <TouchableOpacity
-                    style={styles.continueButton}
-                    onPress={() => (navigation as any).replace('FaceCapture')}
-                >
-                    <Text style={styles.continueButtonText}>Tiếp tục</Text>
-                </TouchableOpacity>
-            </ScrollView>
+                        {/* Nút quay lại màu xanh */}
+                        <TouchableOpacity
+                            style={styles.backButton_error}
+                            onPress={() => (navigation as any).goBack()}
+                        >
+                            <Text style={styles.buttonText_error}>BACK</Text>
+                        </TouchableOpacity>
+                    </View>
+            )
     )
 };
 
@@ -182,7 +217,45 @@ const styles = StyleSheet.create({
         marginTop: 16,
         fontSize: 16,
         color: '#333', // màu chữ
-    }
+    },
+    container_error: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+        backgroundColor: '#fff',
+    },
+    errorTitle_error: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: 'red',
+        marginBottom: 20,
+    },
+    errorImage_error: {
+        width: 200,
+        height: 200,
+        marginBottom: 20,
+    },
+    errorMessage_error: {
+        fontSize: 16,
+        textAlign: 'center',
+        color: '#333',
+        marginBottom: 30,
+        paddingHorizontal: 20,
+    },
+    backButton_error: {
+        backgroundColor: '#007AFF',
+        paddingVertical: 12,
+        paddingHorizontal: 30,
+        borderRadius: 25,
+        width: '80%',
+    },
+    buttonText_error: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
 });
 
 export default IDCardResultScreen;

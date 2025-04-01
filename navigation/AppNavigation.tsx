@@ -21,6 +21,7 @@ import IDCaptureScreen from '@/app/verfiyAccount/ipCapture/id-capture';
 import PinRegistrationScreen from '@/app/verfiyAccount/registerPIN/register-pin';
 import IDCardResultScreen from '@/app/verfiyAccount/ipCapture/id-result';
 import FaceCaptureSuccess from '@/app/verfiyAccount/faceCapture/face-capture-success';
+import FaceTransactionRegisterSuccess from '@/app/registerTransaction/transactionFace/transaction-face-success';
 
 const Stack = createNativeStackNavigator();
 
@@ -49,6 +50,7 @@ export default function AppNavigator() {
             <Stack.Screen name="TransferConfirmOTP" component={TransferConfirmOTP} />
             <Stack.Screen name="TransferSendOTP" component={TransferSendOTP} />
             <Stack.Screen name="FaceCaptureSuccess" component={FaceCaptureSuccess} />
+            <Stack.Screen name="FaceTransactionRegisterSuccess" component={FaceTransactionRegisterSuccess} />
         </Stack.Navigator>
     );
 }

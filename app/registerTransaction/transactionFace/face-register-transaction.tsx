@@ -8,7 +8,6 @@ import { useNavigation } from '@react-navigation/native';
 const { width } = Dimensions.get('window');
 
 export default function FaceRegisterTransaction() {
-    const [facePhoto, setFacePhoto] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
 
     const navigation = useNavigation()
@@ -31,7 +30,8 @@ export default function FaceRegisterTransaction() {
             });
 
             if (!result.canceled) {
-                setFacePhoto(result.assets[0].uri);
+                (navigation as any).replace('FaceTransactionRegisterSuccess', { portrait: result.assets[0].uri });
+
             }
         } catch (error) {
             Alert.alert('Error', 'Cannot open the camera');
@@ -42,51 +42,31 @@ export default function FaceRegisterTransaction() {
 
     return (
         <View style={styles.container}>
-            {!facePhoto ? (
-                <View style={styles.captureContainer}>
-                    <Text style={styles.guideText}>ALIGN YOUR FACE WITHIN THE FRAME</Text>
-                    <View style={styles.guideFrame}>
-                        <View style={styles.faceOutline} >
-                            <AntDesign
-                                name="user"
-                                size={120}
-                                color="#007AFF"
-                                style={{ marginBottom: 15 }}
-                            />
-                        </View>
-                    </View>
-
-                    <TouchableOpacity
-                        style={styles.captureButton}
-                        onPress={captureFace}
-                        disabled={isLoading}
-                    >
-                        {isLoading ? (
-                            <ActivityIndicator color="white" />
-                        ) : (
-                            <>
-                                <MaterialIcons name="photo-camera" size={24} color="white" />
-                                <Text style={styles.buttonText}>NEXT</Text>
-                            </>
-                        )}
-                    </TouchableOpacity>
-                </View>
-            ) : (
-                <View style={styles.previewContainer}>
-                    <Image source={{ uri: facePhoto }} style={styles.previewImage} />
-
-                    <LoadingIndicator size={50} color='blue' />
-
-                    <View style={styles.actionButtons}>
-                        <TouchableOpacity
-                            style={styles.confirmButton}
-                            onPress={() => (navigation as any).replace('Home')}
-                        >
-                            <Text style={styles.buttonText}>NEXT</Text>
-                        </TouchableOpacity>
+            <View style={styles.captureContainer}>
+                <Text style={styles.guideText}>ALIGN YOUR FACE WITHIN THE FRAME</Text>
+                <View style={styles.guideFrame}>
+                    <View style={styles.faceOutline} >
+                        <AntDesign
+                            name="user"
+                            size={120}
+                            color="#007AFF"
+                            style={{ marginBottom: 15 }}
+                        />
                     </View>
                 </View>
-            )}
+
+                <TouchableOpacity
+                    style={styles.captureButton}
+                    onPress={captureFace}
+                    disabled={isLoading}
+                >
+
+                    <>
+                        <MaterialIcons name="photo-camera" size={24} color="white" />
+                        <Text style={styles.buttonText}>NEXT</Text>
+                    </>
+                </TouchableOpacity>
+            </View>
         </View>
     );
 }

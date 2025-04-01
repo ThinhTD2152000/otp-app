@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Alert, Platform } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { post } from '@/fetch/apiClient';
 import LoadingIndicator from '@/components/Loading';
-import * as FileSystem from 'expo-file-system';
-import RNFS from "react-native-fs";
+import * as FileSystem from "expo-file-system";
+import * as ImageManipulator from "expo-image-manipulator";
 
 const IDCardResultScreen = ({ route }: { route: { params: { ocrData: any } } }) => {
 
@@ -14,62 +14,62 @@ const IDCardResultScreen = ({ route }: { route: { params: { ocrData: any } } }) 
 
 
     const navigation = useNavigation();
-    // const ocrData: any = {
-    //     idNumber: '0123456789',
-    //     fullName: 'NGUYEN VAN A',
-    //     dob: '01/01/1990',
-    //     gender: 'Nam',
-    //     nationality: 'Việt Nam',
-    //     hometown: 'Hà Nội',
-    //     address: '123 Đường ABC, Quận 1, TP.HCM',
-    //     issueDate: '01/01/2020',
-    //     issuePlace: 'CA TP Hà Nội',
-    //     frontImage: 'base64_or_url_image', // (nếu có)
-    //     backImage: 'base64_or_url_image'
-    // }
+
     const ocrData = route.params.ocrData
-    console.log(ocrData)
 
     // Các trường thông tin CCCD
     const fields = [
-        { label: 'Số CCCD', value: ocrData },
-        // { label: 'Họ và tên', value: ocrData.fullName },
-        // { label: 'Ngày sinh', value: ocrData.dob },
-        // { label: 'Giới tính', value: ocrData.gender },
-        // { label: 'Quốc tịch', value: ocrData.nationality },
-        // { label: 'Quê quán', value: ocrData.hometown },
-        // { label: 'Địa chỉ thường trú', value: ocrData.address },
-        // { label: 'Ngày cấp', value: ocrData.issueDate },
-        // { label: 'Nơi cấp', value: ocrData.issuePlace },
+        { label: 'ID', value: data?.data?.data?.ocr?.id_eng },
+        { label: 'Name', value: data?.data?.data?.ocr?.name_eng },
+        { label: 'Father Name', value: data?.data?.data?.ocr?.father_name_eng },
+        { label: 'Gender', value: data?.data?.data?.ocr?.gender },
+        { label: 'Issue Date', value: data?.data?.data?.ocr?.issue_date_en },
     ];
 
     const handleOCR = async () => {
-        const fileInfo = await FileSystem.getInfoAsync(ocrData);
         try {
-            const formData: any = new FormData()
-            formData.append('image', {
-                url: Image.resolveAssetSource(testImage).uri,
-                type: 'image/jpeg',
-                name: 'ocr.jpeg'
-            })
-            console.log('FormData:', formData);
-            const res = await post('kyc/OCR', formData,
+            if (!ocrData) {
+                throw new Error("No image selected");
+            }
+
+            // 📌 Xóa 'file://' trên iOS nếu có
+            const imageUri = Platform.OS === "ios" ? ocrData.replace("file://", "") : ocrData;
+
+            // 📌 Kiểm tra file có tồn tại không
+            const fileInfo = await FileSystem.getInfoAsync(imageUri);
+            if (!fileInfo.exists) {
+                throw new Error("File does not exist");
+            }
+
+            const resizedImage = await ImageManipulator.manipulateAsync(
+                ocrData,
+                [{ resize: { width: 800 } }], // Resize width, giữ aspect ratio
+                { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
+            );
+
+            const formData: any = new FormData();
+            formData.append("image", {
+                uri: resizedImage.uri,
+                type: "image/jpeg",
+                name: "ocr.jpg",
+            });
+
+            const res: any = await post(
+                'kyc/OCR',
+                formData,
                 {
-                    'Content-Type': 'multipart/form-data'
-
-                }, true)
-            console.log(res)
-
+                    'Content-Type': 'multipart/form-data',
+                },
+                true
+            );
             setData(res)
         } catch (error) {
-            throw error
+            console.error("OCR Error:", error);
+            Alert.alert("Error", "Failed to process OCR. Please try again.");
         } finally {
-            setIsLoading(false)
+            setIsLoading(false);
         }
-    }
-
-
-
+    };
 
 
     useEffect(() => {
@@ -80,77 +80,67 @@ const IDCardResultScreen = ({ route }: { route: { params: { ocrData: any } } }) 
     }, []);
 
     return (
-
-        isLoading ?
-            <View style={styles.containerImage} >
+        isLoading ? (
+            <View style={styles.containerImage}>
                 <LoadingIndicator />
                 <Text style={styles.loadingText}>Processing...</Text>
-            </View > :
-            (
-                data.data.response_code !== 500 ?
-                    <ScrollView contentContainerStyle={styles.container
-                    } >
-                        {/* Phần header */}
-                        < View style={styles.header} >
-                            <Text style={styles.successTitle}>OCR thành công</Text>
-                            {
-                                ocrData && (
-                                    <Image
-                                        source={{ uri: ocrData }}
-                                        style={styles.idImage}
-                                        resizeMode="contain"
-                                    />
-                                )
-                            }
-                        </View >
-
-                        {/* Phần thông tin chi tiết */}
-                        < View style={styles.infoContainer} >
-                            {
-                                fields.map((field, index) => (
-                                    field.value && (
-                                        <View key={index} style={styles.infoRow}>
-                                            <Text style={styles.label}>{field.label}:</Text>
-                                            <Text style={styles.value}>{field.value}</Text>
-                                        </View>
-                                    )
-                                ))
-                            }
-                        </View >
-
-                        {/* Button tiếp tục */}
-                        < TouchableOpacity
-                            style={styles.continueButton}
-                            onPress={() => (navigation as any).replace('FaceCapture')}
-                        >
-                            <Text style={styles.continueButtonText}>Tiếp tục</Text>
-                        </TouchableOpacity >
-                    </ScrollView > : <View style={styles.container_error}>
-                        {/* Tiêu đề màu đỏ */}
-                        <Text style={styles.errorTitle_error}>OCR Failed</Text>
-
-                        {/* Hình ảnh thất bại */}
-                        <Image
-                            source={require('@/assets/images/notData.jpeg')} // Thay bằng đường dẫn hình ảnh của bạn
-                            style={styles.errorImage_error}
-                            resizeMode="contain"
-                        />
-
-                        {/* Thông báo lỗi */}
-                        <Text style={styles.errorMessage_error}>
-                            Unable to recognize information from the image. Please try again with a clearer image.
-                        </Text>
-
-                        {/* Nút quay lại màu xanh */}
-                        <TouchableOpacity
-                            style={styles.backButton_error}
-                            onPress={() => (navigation as any).goBack()}
-                        >
-                            <Text style={styles.buttonText_error}>BACK</Text>
-                        </TouchableOpacity>
+            </View>
+        ) : (
+            data?.data?.response_code === 200 ? (
+                <ScrollView contentContainerStyle={styles.container}>
+                    {/* Phần header */}
+                    <View style={styles.header}>
+                        <Text style={styles.successTitle}>OCR Successfully</Text>
+                        {ocrData && (
+                            <Image
+                                source={testImage}
+                                style={styles.idImage}
+                                resizeMode="contain"
+                            />
+                        )}
                     </View>
+
+                    {/* Phần thông tin chi tiết */}
+                    <View style={styles.infoContainer}>
+                        {fields.map((field, index) => (
+                            field.value && (
+                                <View key={index} style={styles.infoRow}>
+                                    <Text style={styles.label}>{field.label}:</Text>
+                                    <Text style={styles.value}>{field.value}</Text>
+                                </View>
+                            )
+                        ))}
+                    </View>
+
+                    {/* Button tiếp tục */}
+                    <TouchableOpacity
+                        style={styles.continueButton}
+                        onPress={() => (navigation as any).replace('FaceCapture', { imageOcr: data?.imageUpload })}
+                    >
+                        <Text style={styles.continueButtonText}>Tiếp tục</Text>
+                    </TouchableOpacity>
+                </ScrollView>
+            ) : (
+                <View style={styles.container_error}>
+                    <Text style={styles.errorTitle_error}>OCR Failed</Text>
+                    <Image
+                        source={require('@/assets/images/notData.jpeg')}
+                        style={styles.errorImage_error}
+                        resizeMode="contain"
+                    />
+                    <Text style={styles.errorMessage_error}>
+                        Unable to recognize information from the image. Please try again with a clearer image.
+                    </Text>
+                    <TouchableOpacity
+                        style={styles.backButton_error}
+                        onPress={() => (navigation as any).goBack()}
+                    >
+                        <Text style={styles.buttonText_error}>BACK</Text>
+                    </TouchableOpacity>
+                </View >
             )
-    )
+        )
+    );
 };
 
 const styles = StyleSheet.create({

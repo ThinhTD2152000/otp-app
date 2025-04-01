@@ -63,7 +63,7 @@ const HomeScreen = ({ route }: { route: { params?: { user?: any } } }) => {
             }
 
             {
-                user.isPin &&
+                user?.isPin &&
                 <TouchableOpacity
                     style={styles.registerButton}
                     onPress={() => (navigation as any).navigate('TransactionRegister', {

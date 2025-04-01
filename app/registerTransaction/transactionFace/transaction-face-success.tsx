@@ -6,23 +6,23 @@ import { post } from '@/fetch/apiClient';
 import * as FileSystem from "expo-file-system";
 import * as ImageManipulator from "expo-image-manipulator";
 
-const FaceCaptureSuccess = ({ route }: { route: { params: { portrait_image: any, imageOcr: any } } }) => {
+const FaceTransactionRegisterSuccess = ({ route }: { route: { params: { portrait: any } } }) => {
     const [isLoading, setIsLoading] = useState<boolean>(true)
     const [data, setData] = useState<any>(null)
 
-
-    const image = route.params
+    const portrait = route.params?.portrait
+    console.log(portrait)
 
     const navigation = useNavigation();
 
     const handleCompare = async () => {
         try {
 
-            if (!image.portrait_image) {
+            if (!portrait) {
                 throw new Error("No image selected");
             }
 
-            const imageUri = Platform.OS === "ios" ? image.portrait_image.replace("file://", "") : image.portrait_image;
+            const imageUri = Platform.OS === "ios" ? portrait.replace("file://", "") : portrait;
 
             const fileInfo = await FileSystem.getInfoAsync(imageUri);
             if (!fileInfo.exists) {
@@ -30,24 +30,25 @@ const FaceCaptureSuccess = ({ route }: { route: { params: { portrait_image: any,
             }
 
             const resizedImage = await ImageManipulator.manipulateAsync(
-                image.portrait_image,
+                portrait,
                 [{ resize: { width: 800 } }], // Resize width, giữ aspect ratio
                 { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
             )
 
+            console.log(resizedImage.uri)
+
             // Tạo FormData
             const formData: any = new FormData();
-            formData.append('portrait_image', {
+            formData.append('portrait', {
                 uri: resizedImage.uri,
                 type: 'image/jpeg', // Định dạng ảnh
                 name: 'ocr.jpeg', // Tên file
             });
 
-            formData.append('front_image', image.imageOcr)
 
             // Gửi request lên server
             const res = await post(
-                'kyc/compare-face',
+                'kyc/complete',
                 formData,
                 {
                     'Content-Type': 'multipart/form-data',
@@ -80,7 +81,7 @@ const FaceCaptureSuccess = ({ route }: { route: { params: { portrait_image: any,
                 data?.remoteResponse?.ocr_results?.response_code === 200 ?
                     <View style={styles.container}>
                         {/* Tiêu đề */}
-                        <Text style={styles.title}>FACE AUTHENTICATION SUCCESSFUL</Text>
+                        <Text style={styles.title}>FACE REGISTER SUCCESSFUL</Text>
 
                         {/* Ảnh khuôn mặt */}
                         <Image
@@ -95,7 +96,7 @@ const FaceCaptureSuccess = ({ route }: { route: { params: { portrait_image: any,
                         {/* Nút tiếp tục */}
                         <TouchableOpacity
                             style={styles.continueButton}
-                            onPress={() => (navigation as any).replace('RegisterPin')} // Thay bằng màn hình tiếp theo
+                            onPress={() => (navigation as any).replace('SuccessTransaction')} // Thay bằng màn hình tiếp theo
                         >
                             <Text style={styles.buttonText}>NEXT</Text>
                         </TouchableOpacity>
@@ -223,7 +224,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         textAlign: 'center',
-    },
+    }
 });
-
-export default FaceCaptureSuccess;
+export default FaceTransactionRegisterSuccess;

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { post, put } from '@/fetch/apiClient';
+
 
 const PinRegistrationScreen = () => {
     const [pin, setPin] = useState('');
@@ -10,15 +12,39 @@ const PinRegistrationScreen = () => {
 
     const [step, setStep] = useState(1); // 1: Nhập PIN, 2: Xác nhận PIN
 
-    // Tự động kiểm tra khi confirmPin đủ 4 số
-    useEffect(() => {
-        if (step === 2 && confirmPin.length === 4) {
-            if (pin === confirmPin) {
+    const handleRegisterPin = async () => {
+        console.log(pin)
+        try {
+            // Gọi API để cập nhật PIN
+            const res: any = await put('users/update-pin', { pin });
+            console.log(res)
+
+            // Kiểm tra phản hồi từ API
+            if (res?.isPin) {
+                console.log('PIN registered successfully:', res);
                 Alert.alert(
                     'Success',
                     'PIN registration successful',
                     [{ text: 'OK', onPress: () => (navigation as any).replace('SuccessAccount') }]
                 );
+            } else {
+                // Hiển thị thông báo lỗi nếu API trả về không thành công
+                Alert.alert('Error', res?.message || 'Failed to register PIN. Please try again.');
+            }
+        } catch (error) {
+            // Xử lý lỗi khi gọi API
+            console.error('Register PIN Error:', error);
+            Alert.alert('Error', 'An error occurred while registering the PIN. Please try again.');
+        }
+    };
+
+    // Tự động kiểm tra khi confirmPin đủ 4 số
+    useEffect(() => {
+        if (step === 2 && confirmPin.length === 4) {
+            if (pin === confirmPin) {
+
+                handleRegisterPin()
+
                 // Lưu PIN vào AsyncStorage hoặc state management ở đây
             } else {
                 Alert.alert('Error', 'PIN does not match. Please try again', [

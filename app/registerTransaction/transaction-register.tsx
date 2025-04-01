@@ -44,7 +44,7 @@ const TransactionMethodScreen = ({ route }: { route: { params: { methodPay?: any
                 <Text style={styles.subTitle}>Select Registration Method</Text>
 
                 {methods.map((method) => (
-                    methodPay.includes(method.id) &&
+                    !methodPay.includes(method.id) &&
                     <TouchableOpacity
                         key={method.id}
                         style={[

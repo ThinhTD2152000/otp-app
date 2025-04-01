@@ -2,16 +2,16 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet, Dimensions, Alert, ActivityIndicator } from 'react-native';
 import { MaterialIcons, AntDesign } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import LoadingIndicator from '@/components/Loading';
 import { useNavigation } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
 
-export default function FaceCaptureScreen() {
-    const [facePhoto, setFacePhoto] = useState(null);
+export default function FaceCaptureScreen({ route }: { route: { params: { imageOcr: any } } }) {
     const [isLoading, setIsLoading] = useState(false);
 
     const navigation = useNavigation()
+
+    const imageOcr = route.params?.imageOcr
 
     const captureFace = async () => {
         setIsLoading(true);
@@ -31,8 +31,9 @@ export default function FaceCaptureScreen() {
             });
 
             if (!result.canceled) {
-                setFacePhoto(result.assets[0].uri);
+                (navigation as any).replace('FaceCaptureSuccess', { portrait_image: result.assets[0].uri, imageOcr: imageOcr });
             }
+
         } catch (error) {
             Alert.alert('Error', 'Unable to open the camera');
         } finally {
@@ -40,80 +41,40 @@ export default function FaceCaptureScreen() {
         }
     };
 
-
-    // fetch api
-    // const handleCompareFace = async () => {
-    //         try {
-    //             const formData: any = new FormData()
-    //             formData.append('image', {
-    //                 url: testImage,
-    //                 type: 'image/jpeg',
-    //                 name: 'cccd.jpg'
-    //             })
-    //             const res = await post('kyc/OCR', formData,
-    //                 {
-    //                     'Content-Type': 'multipart/form-data'
-
-    //                 }, true)
-
-    //             setData(res)
-    //         } catch (error) {
-    //             throw error
-    //         } finally {
-    //             setIsLoading(false)
-    //         }
-    //     }
-
     return (
         <View style={styles.container}>
-            {!facePhoto ? (
-                <View style={styles.captureContainer}>
-                    <Text style={styles.guideText}>ALIGN YOUR FACE WITHIN THE FRAME</Text>
-                    <View style={styles.guideFrame}>
-                        <View style={styles.faceOutline} >
-                            <AntDesign
-                                name="user"
-                                size={120}
-                                color="#007AFF"
-                                style={{ marginBottom: 15 }}
-                            />
-                        </View>
+            (
+            <View style={styles.captureContainer}>
+                <Text style={styles.guideText}>ALIGN YOUR FACE WITHIN THE FRAME</Text>
+                <View style={styles.guideFrame}>
+                    <View style={styles.faceOutline} >
+                        <AntDesign
+                            name="user"
+                            size={120}
+                            color="#007AFF"
+                            style={{ marginBottom: 15 }}
+                        />
                     </View>
+                </View>
 
-                    <TouchableOpacity
-                        style={styles.captureButton}
-                        onPress={captureFace}
-                        disabled={isLoading}
-                    >
-                        {isLoading ? (
+                <TouchableOpacity
+                    style={styles.captureButton}
+                    onPress={captureFace}
+                    disabled={isLoading}
+                >
+                    {isLoading ? (
+                        <View>
                             <ActivityIndicator color="white" />
-                        ) : (
-                            <>
-                                <MaterialIcons name="photo-camera" size={24} color="white" />
-                                <Text style={styles.buttonText}>NEXT</Text>
-                            </>
-                        )}
-                    </TouchableOpacity>
-                </View>
-            ) : (
-                <View style={styles.previewContainer}>
-                    <Text style={styles.textVerify}>AUTHENTICATING...</Text>
-                    {/* <Text style={styles.textSuccess}>Xác thực khuôn mặt thành công</Text> */}
-
-                    <Image source={{ uri: facePhoto }} style={styles.previewImage} />
-
-                    <LoadingIndicator size={50} color='blue' />
-
-                    <View style={styles.actionButtons}>
-                        <TouchableOpacity
-                            style={styles.confirmButton}
-                            onPress={() => (navigation as any).replace('FaceCaptureSuccess')}
-                        >
+                        </View>
+                    ) : (
+                        <View style={styles.confirmButton}>
+                            <MaterialIcons name="photo-camera" size={24} color="white" />
                             <Text style={styles.buttonText}>NEXT</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            )}
+                        </View>
+                    )}
+                </TouchableOpacity>
+            </View>
+            )
         </View>
     );
 }

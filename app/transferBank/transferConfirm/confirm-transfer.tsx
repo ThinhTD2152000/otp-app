@@ -1,41 +1,71 @@
+import LoadingIndicator from '@/components/Loading';
+import { getMe } from '@/fetch/authAPI';
 import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Modal } from 'react-native';
 
-const TransferBankConfirm = () => {
-    const [senderInfo] = useState({
-        name: 'NGUYEN VAN A',
-        account: '1234567890',
-        balance: 1000000, // 1,000,000 VND
-        bank: 'Vietcombank'
-    });
-
-    const [receiverInfo] = useState({
-        name: 'NGO THI QUYNH TRANG',
-        account: '19036341990012',
-        bank: 'Techcombank'
-    });
+const TransferBankConfirm = ({ route }: {
+    route: {
+        params: {
+            bank: any,
+            isFastTransfer: boolean,
+            accountNumber: any,
+            accountName: any
+        }
+    }
+}) => {
+    const { bank, accountNumber, accountName } = route.params;
 
     const navigation = useNavigation()
     const [showPaymentMethodModal, setShowPaymentMethodModal] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState<'face' | 'otp'>('face');
     const [amount, setAmount] = useState('');
     const [isConfirming, setIsConfirming] = useState(false);
+    const [user, setUser] = useState<any>({})
+    const [isLoading, setIsLoading] = useState<Boolean>(true)
+
+    const handleGetMe = async () => {
+        try {
+            const res = await getMe()
+            setUser(res)
+        } catch (error) {
+            Alert
+        } finally {
+            setIsLoading(false)
+
+        }
+    }
+
+    const [senderInfo] = useState({
+        name: 'NGUYEN VAN A',
+        account: '1234567890',
+        balance: user?.balance || 0, // 1,000,000 VND
+        bank: 'Vietcombank'
+    });
+
+    const [receiverInfo] = useState({
+        name: accountName,
+        account: accountNumber,
+        bank: bank
+    });
 
     const handleTransfer = () => {
         const transferAmount = parseInt(amount.replace(/\D/g, '')) || 0;
 
         if (!transferAmount) {
-            Alert.alert('Lỗi', 'Vui lòng nhập số tiền hợp lệ');
+            Alert.alert('Error', 'Please enter a valid amount');
             return;
         }
 
-        if (transferAmount > senderInfo.balance) {
+        console.log(transferAmount, senderInfo?.balance)
+
+        if (transferAmount > senderInfo?.balance) {
             Alert.alert(
-                'Số dư không đủ',
-                `Số dư hiện tại: ${senderInfo.balance.toLocaleString()} VND\nBạn cần thêm ${(transferAmount - senderInfo.balance).toLocaleString()} VND để thực hiện giao dịch`,
-                [{ text: 'Đã hiểu' }]
+                'Insufficient Balance',
+                `Current balance: ${senderInfo?.balance?.toLocaleString()} VND\nYou need an additional ${(transferAmount - senderInfo.balance)?.toLocaleString()} VND to complete the transaction`,
+                [{ text: 'Understood' }]
             );
+
             return;
         }
 
@@ -54,119 +84,130 @@ const TransferBankConfirm = () => {
 
     // Format số tiền khi nhập
     const formatAmount = (text: any) => {
-        const num = parseInt(text.replace(/\D/g, '')) || 0;
+        const num: any = parseInt(text.replace(/\D/g, '')) || 0;
         setAmount(num.toLocaleString('vi-VN'));
     };
 
+    useEffect(() => {
+        handleGetMe()
+    }, [])
+
+
+
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>THANH TOÁN</Text>
-
-            {/* Thông tin người chuyển */}
-            <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Người chuyển</Text>
-                <View style={styles.infoCard}>
-                    <Text style={styles.infoText}>{senderInfo.name}</Text>
-                    <Text style={styles.infoText}>{senderInfo.account}</Text>
-                    <Text style={styles.infoText}>{senderInfo.bank}</Text>
-                    <Text style={styles.balanceText}>
-                        Số dư: {senderInfo.balance.toLocaleString('vi-VN')} VND
-                    </Text>
-                </View>
+        isLoading ? (
+            <View style={styles.containerImage}>
+                <LoadingIndicator />
             </View>
+        ) : (
+            <View style={styles.container}>
+                <Text style={styles.title}>PAYMENT</Text>
 
-            {/* Thông tin người nhận */}
-            <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Người nhận</Text>
-                <View style={styles.infoCard}>
-                    <Text style={styles.infoText}>{receiverInfo.name}</Text>
-                    <Text style={styles.infoText}>{receiverInfo.account}</Text>
-                    <Text style={styles.infoText}>{receiverInfo.bank}</Text>
-                </View>
-            </View>
-
-            {/* Nhập số tiền */}
-            <View style={styles.amountInputContainer}>
-                <Text style={styles.inputLabel}>Số tiền chuyển (VND)</Text>
-                <TextInput
-                    style={styles.amountInput}
-                    placeholder="Nhập số tiền"
-                    value={amount}
-                    onChangeText={formatAmount}
-                    keyboardType="numeric"
-                />
-            </View>
-
-            {/* Phương thức thanh toán */}
-            <TouchableOpacity
-                style={styles.paymentMethodContainer}
-                onPress={() => setShowPaymentMethodModal(true)}
-            >
-                <Text style={styles.paymentMethodLabel}>Phương thức thanh toán</Text>
-                <Text style={styles.paymentMethodValue}>
-                    {paymentMethod === 'face' ? 'Xác thực khuôn mặt' : 'Smart OTP'}
-                </Text>
-            </TouchableOpacity>
-
-            {/* Nút xác nhận */}
-            <TouchableOpacity
-                style={[styles.confirmButton, (!amount || isConfirming) && styles.disabledButton]}
-                onPress={handleTransfer}
-                disabled={!amount || isConfirming}
-            >
-                <Text style={styles.confirmButtonText}>
-                    {isConfirming ? 'ĐANG XỬ LÝ...' : 'XÁC NHẬN THANH TOÁN'}
-                </Text>
-            </TouchableOpacity>
-
-            {/* Modal chọn phương thức thanh toán */}
-            <Modal
-                visible={showPaymentMethodModal}
-                transparent
-                animationType="slide"
-                onRequestClose={() => setShowPaymentMethodModal(false)}
-            >
-                <View style={styles.paymentMethodModalBackground}>
-                    <View style={styles.paymentMethodModalContainer}>
-                        <Text style={styles.paymentMethodModalTitle}>Chọn phương thức thanh toán</Text>
-
-                        {/* Option Khuôn mặt */}
-                        <TouchableOpacity
-                            style={styles.paymentOption}
-                            onPress={() => setPaymentMethod('face')}
-                        >
-                            <View style={styles.radioButton}>
-                                {paymentMethod === 'face' && <View style={styles.radioButtonSelected} />}
-                            </View>
-                            <Text style={styles.paymentOptionText}>Xác thực khuôn mặt</Text>
-                        </TouchableOpacity>
-
-                        {/* Option Smart OTP */}
-                        <TouchableOpacity
-                            style={styles.paymentOption}
-                            onPress={() => setPaymentMethod('otp')}
-                        >
-                            <View style={styles.radioButton}>
-                                {paymentMethod === 'otp' && <View style={styles.radioButtonSelected} />}
-                            </View>
-                            <Text style={styles.paymentOptionText}>Smart OTP</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                            style={styles.confirmPaymentMethodButton}
-                            onPress={() => setShowPaymentMethodModal(false)}
-                        >
-                            <Text style={styles.confirmPaymentMethodText}>XÁC NHẬN</Text>
-                        </TouchableOpacity>
+                {/* Thông tin người chuyển */}
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Sender</Text>
+                    <View style={styles.infoCard}>
+                        <Text style={styles.infoText}>{senderInfo.name}</Text>
+                        <Text style={styles.infoText}>{senderInfo.account}</Text>
+                        <Text style={styles.infoText}>{senderInfo.bank}</Text>
+                        <Text style={styles.balanceText}>
+                            Balance: {senderInfo?.balance?.toLocaleString('vi-VN') || 0} VND
+                        </Text>
                     </View>
                 </View>
-            </Modal>
 
-            {/* Modal loading (giữ nguyên) */}
-            <Modal visible={isConfirming} transparent>
-                {/* ... (giữ nguyên phần loading) */}
-            </Modal>
-        </View>
+                {/* Thông tin người nhận */}
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Recipient</Text>
+                    <View style={styles.infoCard}>
+                        <Text style={styles.infoText}>{receiverInfo.name}</Text>
+                        <Text style={styles.infoText}>{receiverInfo.account}</Text>
+                        <Text style={styles.infoText}>{receiverInfo.bank}</Text>
+                    </View>
+                </View>
+
+                {/* Nhập số tiền */}
+                <View style={styles.amountInputContainer}>
+                    <Text style={styles.inputLabel}>Amount to Transfer (VND)</Text>
+                    <TextInput
+                        style={styles.amountInput}
+                        placeholder="Enter amount"
+                        value={amount}
+                        onChangeText={formatAmount}
+                        keyboardType="numeric"
+                    />
+                </View>
+
+                {/* Phương thức thanh toán */}
+                <TouchableOpacity
+                    style={styles.paymentMethodContainer}
+                    onPress={() => setShowPaymentMethodModal(true)}
+                >
+                    <Text style={styles.paymentMethodLabel}>Payment Method</Text>
+                    <Text style={styles.paymentMethodValue}>
+                        {paymentMethod === 'face' ? 'Face Authentication' : 'Smart OTP'}
+                    </Text>
+                </TouchableOpacity>
+
+                {/* Nút xác nhận */}
+                <TouchableOpacity
+                    style={[styles.confirmButton, (!amount || isConfirming) && styles.disabledButton]}
+                    onPress={handleTransfer}
+                    disabled={!amount || isConfirming}
+                >
+                    <Text style={styles.confirmButtonText}>
+                        {isConfirming ? 'PROCESSING...' : 'CONFIRM PAYMENT'}
+
+                    </Text>
+                </TouchableOpacity>
+
+                {/* Modal chọn phương thức thanh toán */}
+                <Modal
+                    visible={showPaymentMethodModal}
+                    transparent
+                    animationType="slide"
+                    onRequestClose={() => setShowPaymentMethodModal(false)}
+                >
+                    <View style={styles.paymentMethodModalBackground}>
+                        <View style={styles.paymentMethodModalContainer}>
+                            <Text style={styles.paymentMethodModalTitle}>Select Payment Method</Text>
+                            {/* Option Khuôn mặt */}
+                            <TouchableOpacity
+                                style={styles.paymentOption}
+                                onPress={() => setPaymentMethod('face')}
+                            >
+                                <View style={styles.radioButton}>
+                                    {paymentMethod === 'face' && <View style={styles.radioButtonSelected} />}
+                                </View>
+                                <Text style={styles.paymentOptionText}>Face Authentication</Text>
+                            </TouchableOpacity>
+
+                            {/* Option Smart OTP */}
+                            <TouchableOpacity
+                                style={styles.paymentOption}
+                                onPress={() => setPaymentMethod('otp')}
+                            >
+                                <View style={styles.radioButton}>
+                                    {paymentMethod === 'otp' && <View style={styles.radioButtonSelected} />}
+                                </View>
+                                <Text style={styles.paymentOptionText}>Smart OTP</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                style={styles.confirmPaymentMethodButton}
+                                onPress={() => setShowPaymentMethodModal(false)}
+                            >
+                                <Text style={styles.confirmPaymentMethodText}>CONFIRM</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </Modal>
+
+                {/* Modal loading (giữ nguyên) */}
+                <Modal visible={isConfirming} transparent>
+                    {/* ... (giữ nguyên phần loading) */}
+                </Modal>
+            </View>)
     );
 };
 
@@ -206,6 +247,12 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#333',
         marginBottom: 5,
+    },
+    containerImage: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'white',
     },
     balanceText: {
         fontSize: 16,

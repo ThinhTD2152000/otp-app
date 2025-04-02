@@ -47,15 +47,22 @@ const FaceTransactionRegisterSuccess = ({ route }: { route: { params: { portrait
 
 
             // Gửi request lên server
-            const res = await post(
-                'kyc/complete',
-                formData,
-                {
-                    'Content-Type': 'multipart/form-data',
-                },
-                true
-            );
-            setData(res);
+            // const res = await post(
+            //     'kyc/complete',
+            //     formData,
+            //     {
+            //         'Content-Type': 'multipart/form-data',
+            //     },
+            //     true
+            // );
+            // setData(res);
+            const newRes: any = {}
+            newRes.remoteResponse = {
+                ocr_results: {
+                    response_code: 200
+                }
+            }
+            setData(newRes);
         } catch (error) {
             console.log(error)
         } finally {
@@ -80,12 +87,9 @@ const FaceTransactionRegisterSuccess = ({ route }: { route: { params: { portrait
             (
                 data?.remoteResponse?.ocr_results?.response_code === 200 ?
                     <View style={styles.container}>
-                        {/* Tiêu đề */}
-                        <Text style={styles.title}>FACE REGISTER SUCCESSFUL</Text>
-
                         {/* Ảnh khuôn mặt */}
                         <Image
-                            source={require('@/assets/images/logo1.jpg')}
+                            source={require('@/assets/images/success.jpg')} // Thay bằng đường dẫn hình ảnh của bạn
                             style={styles.faceImage}
                             resizeMode="contain"
                         />
@@ -96,9 +100,9 @@ const FaceTransactionRegisterSuccess = ({ route }: { route: { params: { portrait
                         {/* Nút tiếp tục */}
                         <TouchableOpacity
                             style={styles.continueButton}
-                            onPress={() => (navigation as any).replace('SuccessTransaction')} // Thay bằng màn hình tiếp theo
+                            onPress={() => (navigation as any).replace('Home')} // Thay bằng màn hình tiếp theo
                         >
-                            <Text style={styles.buttonText}>NEXT</Text>
+                            <Text style={styles.buttonText}>HOME</Text>
                         </TouchableOpacity>
                     </View> : <View style={styles.container_error}>
                         {/* Tiêu đề màu đỏ */}
@@ -120,6 +124,7 @@ const FaceTransactionRegisterSuccess = ({ route }: { route: { params: { portrait
                         <TouchableOpacity
                             style={styles.backButton_error}
                             onPress={() => (navigation as any).goBack()}
+
                         >
                             <Text style={styles.buttonText_error}>BACK</Text>
                         </TouchableOpacity>

@@ -6,12 +6,12 @@ import * as Crypto from 'expo-crypto';
 
 const SmartOTPScreen = ({ route }: { route: { params: { secretKey: string } } }) => {
     const [otp, setOtp] = useState<string>('');
-    const [countdown, setCountdown] = useState<number>(30);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
     const navigation = useNavigation();
     const secretKey = route.params.secretKey;
+    console.log(secretKey)
 
     // Hàm tạo OTP
     const generateNumericOTP = useCallback(async (): Promise<string> => {
@@ -38,7 +38,6 @@ const SmartOTPScreen = ({ route }: { route: { params: { secretKey: string } } })
         try {
             const newOtp = await generateNumericOTP();
             setOtp(newOtp);
-            setCountdown(30); // Reset về 30 giây
             setError(null);
         } catch (err) {
             setError('Không thể tạo OTP. Vui lòng thử lại.');
@@ -69,26 +68,26 @@ const SmartOTPScreen = ({ route }: { route: { params: { secretKey: string } } })
         }
     };
 
+    const handelResOTP = async () => {
+        try {
+            const res = await post('otp/generate-otp', { secretKey: secretKey });
+            console.log(res)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     // Effect cho countdown và tự động cập nhật OTP
     useEffect(() => {
         updateOTP(); // Tạo OTP lần đầu
+        handelResOTP()
+        console.log('OTP:', otp);
 
-        const timer = setInterval(() => {
-            setCountdown(prev => {
-                if (prev <= 1) {
-                    updateOTP(); // Tạo OTP mới khi hết thời gian
-                    return 30;
-                }
-                return prev - 1;
-            });
-        }, 1000);
-
-        return () => clearInterval(timer);
-    }, [updateOTP]);
+    }, []);
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Mã Smart OTP của bạn</Text>
+            <Text style={styles.title}>Your Smart OTP code</Text>
 
             {error && (
                 <Text style={styles.errorText}>{error}</Text>
@@ -114,15 +113,9 @@ const SmartOTPScreen = ({ route }: { route: { params: { secretKey: string } } })
                 {isLoading ? (
                     <ActivityIndicator color="#fff" />
                 ) : (
-                    <Text style={styles.confirmButtonText}>Xác nhận</Text>
+                    <Text style={styles.confirmButtonText}>CONFIRM</Text>
                 )}
             </TouchableOpacity>
-
-            <View style={styles.resendContainer}>
-                <Text style={styles.resendText}>
-                    Mã OTP sẽ cập nhật sau: {countdown}s
-                </Text>
-            </View>
         </View>
     );
 };

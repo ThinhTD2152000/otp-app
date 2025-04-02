@@ -1,14 +1,27 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Image, Alert } from 'react-native';
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { post } from '@/fetch/apiClient';
+import { getMe } from '@/fetch/authAPI';
+import LoadingIndicator from '@/components/Loading';
 
-const HomeScreen = ({ route }: { route: { params?: { user?: any } } }) => {
+const HomeScreen = () => {
     const navigation = useNavigation()
+    const [data, setData] = useState<any>({})
+    const [isLoading, setIsLoading] = useState<Boolean>(true)
 
-    const user: any = route.params?.user
-    console.log(user)
+    const handleGetMe = async () => {
+        try {
+            const res = await getMe()
+            setData(res)
+        } catch (error) {
+            Alert
+        } finally {
+            setIsLoading(false)
+
+        }
+    }
 
     const handleCreateSession = async () => {
         try {
@@ -30,65 +43,75 @@ const HomeScreen = ({ route }: { route: { params?: { user?: any } } }) => {
         }
     };
 
+    useEffect(() => {
+        handleGetMe()
+    }, [])
+
     return (
-        <SafeAreaView style={styles.container}>
-            {/* Header với tiêu đề */}
-            <View style={styles.header}>
-                <Text style={styles.title}>HOME</Text>
+
+        isLoading ? (
+            <View style={styles.containerImage}>
+                <LoadingIndicator />
             </View>
+        ) : (
+            <SafeAreaView style={styles.container}>
+                {/* Header với tiêu đề */}
+                <View style={styles.header}>
+                    <Text style={styles.title}>HOME</Text>
+                </View>
 
-            {/* Nội dung chính */}
-            <View style={styles.content}>
-                <Image
-                    source={require('../assets/images/logo1.jpg')}
-                    style={styles.illustration}
-                    resizeMode="contain"
-                />
+                {/* Nội dung chính */}
+                <View style={styles.content}>
+                    <Image
+                        source={require('../assets/images/logo1.jpg')}
+                        style={styles.illustration}
+                        resizeMode="contain"
+                    />
 
-                <Text style={styles.welcomeText}>Welcome to the app</Text>
-                <Text style={styles.subText}>Start registering for transactions now!</Text>
+                    <Text style={styles.welcomeText}>Welcome to the app</Text>
+                    <Text style={styles.subText}>Start registering for transactions now!</Text>
 
-            </View>
+                </View>
 
-            {/* Nút đăng ký giao dịch */}
-            {
-                !user?.isPin &&
-                <TouchableOpacity
-                    style={styles.registerButton}
-                    onPress={handleCreateSession}
-                >
-                    <MaterialIcons name="payment" size={24} color="white" />
-                    <Text style={styles.buttonText}>ACCOUNT VERIFICATION</Text>
-                </TouchableOpacity>
-            }
+                {/* Nút đăng ký giao dịch */}
+                {
+                    !data?.isPin &&
+                    <TouchableOpacity
+                        style={styles.registerButton}
+                        onPress={handleCreateSession}
+                    >
+                        <MaterialIcons name="payment" size={24} color="white" />
+                        <Text style={styles.buttonText}>ACCOUNT VERIFICATION</Text>
+                    </TouchableOpacity>
+                }
 
-            {
-                user?.isPin &&
-                <TouchableOpacity
-                    style={styles.registerButton}
-                    onPress={() => (navigation as any).navigate('TransactionRegister', {
-                        methodPay: [
-                            user?.isOpenFace ? 'face' : '',
-                            user?.isOpenOTP ? 'otp' : '',
-                        ].filter(Boolean), // Loại bỏ các giá trị rỗng
-                    })}
-                >
-                    <MaterialIcons name="payment" size={24} color="white" />
-                    <Text style={styles.buttonText}>TRANSACTION REGISTRATION</Text>
-                </TouchableOpacity>
-            }
+                {
+                    data?.isPin &&
+                    <TouchableOpacity
+                        style={styles.registerButton}
+                        onPress={() => (navigation as any).navigate('TransactionRegister', {
+                            methodPay: [
+                                data?.isOpenFace ? 'face' : '',
+                                data?.isOpenOTP ? 'otp' : '',
+                            ].filter(Boolean), // Loại bỏ các giá trị rỗng
+                        })}
+                    >
+                        <MaterialIcons name="payment" size={24} color="white" />
+                        <Text style={styles.buttonText}>TRANSACTION REGISTRATION</Text>
+                    </TouchableOpacity>
+                }
 
-            {
-                (user?.isOpenOTP || user?.isOpenFace) &&
-                <TouchableOpacity
-                    style={styles.registerButton}
-                    onPress={() => (navigation as any).navigate('TransferBank')}
-                >
-                    <MaterialCommunityIcons name="bank-transfer-in" size={26} color="white" />
-                    <Text style={styles.buttonText}>BANK TRANSFER</Text>
-                </TouchableOpacity>
-            }
-        </SafeAreaView >
+                {
+                    !(data?.isOpenOTP || data?.isOpenFace) &&
+                    <TouchableOpacity
+                        style={styles.registerButton}
+                        onPress={() => (navigation as any).navigate('TransferBank')}
+                    >
+                        <MaterialCommunityIcons name="bank-transfer-in" size={26} color="white" />
+                        <Text style={styles.buttonText}>BANK TRANSFER</Text>
+                    </TouchableOpacity>
+                }
+            </SafeAreaView >)
     );
 };
 
@@ -125,6 +148,12 @@ const styles = StyleSheet.create({
         color: '#333',
         marginBottom: 8,
         textAlign: 'center',
+    },
+    containerImage: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'white',
     },
     subText: {
         fontSize: 16,

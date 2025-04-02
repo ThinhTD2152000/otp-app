@@ -19,6 +19,7 @@ export default function LoginScreen() {
         const newData = { username, password }
 
         setLoading(true);
+        console.log("call")
         try {
             const res: any = await login(newData);
 
@@ -29,8 +30,8 @@ export default function LoginScreen() {
                 [{
                     text: 'Next', onPress: () => {
                         setTimeout(() => {
-                            (navigation as any).replace('Home', { user: res });
-                        }, 1000);
+                            (navigation as any).replace('Home');
+                        }, 500);
                     }
                 }]
             );

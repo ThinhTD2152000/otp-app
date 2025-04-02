@@ -5,7 +5,6 @@ import { useNavigation } from '@react-navigation/native';
 
 const TransferSuccess = () => {
     const [selectedBank, setSelectedBank] = useState<any>(null);
-    const [isFastTransfer, setIsFastTransfer] = useState(true);
     const [accountNumber, setAccountNumber] = useState('');
     const [accountName, setAccountName] = useState('');
     const [bankModalVisible, setBankModalVisible] = useState(false);
@@ -37,7 +36,6 @@ const TransferSuccess = () => {
     const handleContinue = () => {
         (navigation as any).navigate('TransferBankConfirm', {
             bank: selectedBank,
-            isFastTransfer,
             accountNumber,
             accountName
         });
@@ -103,17 +101,6 @@ const TransferSuccess = () => {
                     />
                 </View>
             </Modal>
-
-            {/* Nút chuyển tiền nhanh */}
-            <View style={styles.switchRow}>
-                <Text style={styles.switchLabel}>Fast transfer</Text>
-                <Switch
-                    value={isFastTransfer}
-                    onValueChange={setIsFastTransfer}
-                    trackColor={{ false: "#e0e0e0", true: "#007AFF" }}
-                    thumbColor={isFastTransfer ? "#007AFF" : "#f5f5f5"}
-                />
-            </View>
 
             {/* Ô nhập số tài khoản (chỉ số) */}
             <View style={styles.inputGroup}>

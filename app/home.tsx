@@ -63,7 +63,7 @@ const HomeScreen = () => {
                 {/* Nội dung chính */}
                 <View style={styles.content}>
                     <Image
-                        source={require('../assets/images/logo1.jpg')}
+                        source={require('@/assets/images/logo1.jpg')}
                         style={styles.illustration}
                         resizeMode="contain"
                     />
@@ -90,10 +90,8 @@ const HomeScreen = () => {
                     <TouchableOpacity
                         style={styles.registerButton}
                         onPress={() => (navigation as any).navigate('TransactionRegister', {
-                            methodPay: [
-                                data?.isOpenFace ? 'face' : '',
-                                data?.isOpenOTP ? 'otp' : '',
-                            ].filter(Boolean), // Loại bỏ các giá trị rỗng
+                            isOpenFace: data?.isOpenFace,
+                            isOpenOTP: !data?.isOpenOTP
                         })}
                     >
                         <MaterialIcons name="payment" size={24} color="white" />

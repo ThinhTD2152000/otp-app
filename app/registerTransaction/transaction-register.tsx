@@ -1,36 +1,83 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Alert, Modal } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
-const TransactionMethodScreen = ({ route }: { route: { params: { methodPay?: any } } }) => {
-    const [selectedMethod, setSelectedMethod] = useState<any>(null);
-    const navigation = useNavigation()
+const TransactionMethodScreen = ({ route }: {
+    route: {
+        params: {
+            isOpenFace: any,
+            isOpenOTP: any
+        }
+    }
+}) => {
+    const { isOpenFace, isOpenOTP }: any = route?.params;
+    const [selectedMethods, setSelectedMethods] = useState<string[]>([]);
 
-    const methodPay: any = route?.params.methodPay
+    const navigation = useNavigation();
+
 
     const methods = [
         {
             id: 'face',
             title: 'Sign up with Face Recognition',
             icon: 'face',
-            description: 'Easily authenticate using facial recognition'
+            description: 'Easily authenticate using facial recognition',
+            isCheck: isOpenFace
         },
         {
             id: 'otp',
             title: 'Sign up with Smart OTP',
             icon: 'sms',
-            description: 'Enter your PIN to generate a Smart OTP automatically'
+            description: 'Enter your PIN to generate a Smart OTP automatically',
+            isCheck: isOpenOTP
         }
     ];
 
     const handleContinue = () => {
-        if (!selectedMethod) {
-            Alert.alert('Notification', 'Please select a registration method');
+        if (selectedMethods.length !== 1) {
+            Alert.alert('Notification', 'Please select exactly one registration method');
             return;
         }
-        (navigation as any).navigate(selectedMethod === 'face' ? 'FaceRegister' : 'SmartOtpRegister');
+        (navigation as any).navigate(selectedMethods[0] === 'face' ? 'FaceRegister' : 'SmartOtpRegister');
     };
+
+    const handleMethodPress = (methodId: string) => {
+        if (selectedMethods.includes(methodId)) {
+            // Show confirmation when unchecking
+            Alert.alert(
+                'Xác nhận',
+                'Bạn có chắc chắn muốn bỏ chọn phương thức này không?',
+                [
+                    {
+                        text: 'Không',
+                        style: 'cancel',
+                        onPress: () => { } // Không làm gì
+                    },
+                    {
+                        text: 'Có',
+                        onPress: () => {
+                            setSelectedMethods(selectedMethods.filter(id => id !== methodId));
+                        }
+                    }
+                ]
+            );
+        } else {
+            // When checking new method, add to current selection
+            setSelectedMethods([...selectedMethods, methodId]);
+        }
+    };
+
+    useEffect(() => {
+        const newData = []
+        if (isOpenFace) {
+            newData.push('face')
+        }
+        if (isOpenOTP) {
+            newData.push('otp')
+        }
+        setSelectedMethods([...newData])
+    }, [])
 
     return (
         <SafeAreaView style={styles.container}>
@@ -39,24 +86,30 @@ const TransactionMethodScreen = ({ route }: { route: { params: { methodPay?: any
                 <Text style={styles.title}>REGISTER TRANSACTION</Text>
             </View>
 
-            {/* Nội dung chính */}
+            {/* Main content */}
             <View style={styles.content}>
                 <Text style={styles.subTitle}>Select Registration Method</Text>
 
                 {methods.map((method) => (
-                    !methodPay.includes(method.id) &&
                     <TouchableOpacity
                         key={method.id}
                         style={[
                             styles.methodCard,
-                            selectedMethod === method.id && styles.selectedCard,
+                            selectedMethods.includes(method.id) && styles.selectedCard,
                         ]}
-                        onPress={() => setSelectedMethod(method.id)}
+                        onPress={() => handleMethodPress(method.id)}
                     >
-                        <View style={styles.radioContainer}>
-                            <View style={styles.outerCircle}>
-                                {selectedMethod === method.id && (
-                                    <View style={styles.innerCircle} />
+                        <View style={styles.checkboxContainer}>
+                            <View style={[
+                                styles.checkbox,
+                                selectedMethods.includes(method.id) && styles.checkedBox
+                            ]}>
+                                {selectedMethods.includes(method.id) && (
+                                    <MaterialIcons
+                                        name="check"
+                                        size={18}
+                                        color="white"
+                                    />
                                 )}
                             </View>
                         </View>
@@ -66,11 +119,11 @@ const TransactionMethodScreen = ({ route }: { route: { params: { methodPay?: any
                                 <MaterialIcons
                                     name={method.icon}
                                     size={24}
-                                    color={selectedMethod === method.id ? '#007AFF' : '#666'}
+                                    color={selectedMethods.includes(method.id) ? '#007AFF' : '#666'}
                                 />
                                 <Text style={[
                                     styles.methodTitle,
-                                    selectedMethod === method.id && styles.selectedText
+                                    selectedMethods.includes(method.id) && styles.selectedText
                                 ]}>
                                     {method.title}
                                 </Text>
@@ -81,17 +134,18 @@ const TransactionMethodScreen = ({ route }: { route: { params: { methodPay?: any
                 ))}
             </View>
 
-            {/* Nút tiếp tục */}
+            {/* Continue button */}
             <TouchableOpacity
                 style={[
                     styles.continueButton,
-                    !selectedMethod && styles.disabledButton
+                    selectedMethods.length !== 1 && styles.disabledButton
                 ]}
                 onPress={handleContinue}
-                disabled={!selectedMethod}
+                disabled={selectedMethods.length !== 1}
             >
                 <Text style={styles.continueText}>NEXT</Text>
             </TouchableOpacity>
+
         </SafeAreaView>
     );
 };
@@ -134,23 +188,21 @@ const styles = StyleSheet.create({
         borderColor: '#007AFF',
         backgroundColor: '#F0F7FF',
     },
-    radioContainer: {
+    checkboxContainer: {
         marginRight: 15,
     },
-    outerCircle: {
-        height: 22,
-        width: 22,
-        borderRadius: 11,
+    checkbox: {
+        height: 24,
+        width: 24,
+        borderRadius: 4,
         borderWidth: 2,
         borderColor: '#007AFF',
         alignItems: 'center',
         justifyContent: 'center',
     },
-    innerCircle: {
-        height: 12,
-        width: 12,
-        borderRadius: 6,
+    checkedBox: {
         backgroundColor: '#007AFF',
+        borderColor: '#007AFF',
     },
     methodInfo: {
         flex: 1,
@@ -173,7 +225,7 @@ const styles = StyleSheet.create({
     methodDescription: {
         fontSize: 14,
         color: '#666',
-        paddingLeft: 0, // Căn lề bằng với icon
+        paddingLeft: 0,
     },
     continueButton: {
         backgroundColor: '#007AFF',
@@ -189,6 +241,56 @@ const styles = StyleSheet.create({
         color: 'white',
         fontWeight: 'bold',
         fontSize: 16,
+    },
+    // Modal styles
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalContainer: {
+        width: '80%',
+        backgroundColor: 'white',
+        borderRadius: 10,
+        padding: 20,
+    },
+    modalTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 10,
+        color: '#333',
+    },
+    modalMessage: {
+        fontSize: 16,
+        marginBottom: 20,
+        color: '#666',
+    },
+    modalButtons: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+    },
+    modalButtonNo: {
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderWidth: 1,
+        borderColor: '#007AFF',
+        borderRadius: 5,
+        marginRight: 10,
+    },
+    modalButtonNoText: {
+        color: '#007AFF',
+        fontWeight: 'bold',
+    },
+    modalButtonYes: {
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        backgroundColor: '#007AFF',
+        borderRadius: 5,
+    },
+    modalButtonYesText: {
+        color: 'white',
+        fontWeight: 'bold',
     },
 });
 

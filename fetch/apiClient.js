@@ -1,4 +1,4 @@
-const BASE_URL = 'https://75f0-112-137-129-179.ngrok-free.app';
+const BASE_URL = 'https://5955-2402-800-61c5-60b0-c58b-bc61-32a1-8bd7.ngrok-free.app';
 
 // Biến lưu trữ token trong memory
 let authToken = null;
@@ -19,7 +19,6 @@ const fetchData = async (endpoint, options = {}) => {
   const { method = 'GET', headers = {}, body, isFileUpload = false } = options;
 
   console.log('token:', authToken);
-  console.log(BASE_URL);
 
   const defaultHeaders = {
     'Content-Type': 'application/json',

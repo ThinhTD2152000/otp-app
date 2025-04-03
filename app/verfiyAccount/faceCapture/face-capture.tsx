@@ -164,9 +164,9 @@ const styles = StyleSheet.create({
     },
     confirmButton: {
         backgroundColor: '#007AFF',
-        paddingVertical: 15,
-        paddingHorizontal: 25,
-        borderRadius: 30,
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 20,
         flexDirection: 'row',
         justifyContent: 'center',
         gap: 10
@@ -185,6 +185,6 @@ const styles = StyleSheet.create({
     buttonText: {
         color: 'white',
         fontSize: 16,
-        fontWeight: '600'
+        fontWeight: '500'
     }
 });

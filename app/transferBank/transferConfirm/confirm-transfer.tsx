@@ -21,26 +21,26 @@ const TransferBankConfirm = ({ route }: {
     const [paymentMethod, setPaymentMethod] = useState<'face' | 'otp'>('face');
     const [amount, setAmount] = useState('');
     const [isConfirming, setIsConfirming] = useState(false);
-    const [user, setUser] = useState<any>({})
     const [isLoading, setIsLoading] = useState<Boolean>(true)
+    const [senderInfo, setSenderInfo] = useState<any>(null); //
 
     const handleGetMe = async () => {
         try {
             const res = await getMe()
-            setUser(res)
+
+            setSenderInfo({
+                name: res?.personalInformation?.name_eng,
+                account: '1234567890', // hoặc thông tin khác nếu có
+                balance: res?.balance || 0,
+                bank: 'Vietcombank', // Thay thế bằng thông tin thực tế nếu có
+            });
+
         } catch (error) {
             Alert
         } finally {
             setIsLoading(false)
         }
     }
-
-    const [senderInfo] = useState({
-        name: 'NGUYEN VAN A',
-        account: '1234567890',
-        balance: user?.balance || 0,
-        bank: 'Vietcombank'
-    });
 
     const [receiverInfo] = useState({
         name: accountName,
@@ -74,7 +74,7 @@ const TransferBankConfirm = ({ route }: {
             (navigation as any).navigate(paymentMethod === 'face' ? 'TransferConfirmFace' : 'TransferConfirmOTP', {
                 amount: transferAmount,
             });
-        }, 1500);
+        }, 1000);
     };
 
     // Format số tiền khi nhập

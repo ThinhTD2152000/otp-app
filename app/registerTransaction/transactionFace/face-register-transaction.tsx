@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet, Dimensions, Alert, ActivityIndicator } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Alert, Platform } from 'react-native';
 import { MaterialIcons, AntDesign } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
+import { post } from '@/fetch/apiClient';
+import * as FileSystem from "expo-file-system";
+import * as ImageManipulator from "expo-image-manipulator";
+import { getMe } from '@/fetch/authAPI';
 
 const { width } = Dimensions.get('window');
 
@@ -10,6 +14,17 @@ export default function FaceRegisterTransaction() {
     const [isLoading, setIsLoading] = useState(false);
 
     const navigation = useNavigation()
+
+    const [user, setUser] = useState<any>(null)
+
+    const handleGetMe = async () => {
+        try {
+            const res = getMe()
+            setUser(res)
+        } catch (error) {
+
+        }
+    }
 
     const captureFace = async () => {
         setIsLoading(true);
@@ -28,9 +43,46 @@ export default function FaceRegisterTransaction() {
                 base64: true
             });
 
-            if (!result.canceled) {
-                (navigation as any).replace('FaceTransactionRegisterSuccess', { portrait: result.assets[0].uri });
+            const imageFace = result.assets[0].uri
 
+            if (!result.canceled) {
+
+                if (!imageFace) {
+                    throw new Error("No image selected");
+                }
+
+                const imageUri = Platform.OS === "ios" ? imageFace.replace("file://", "") : imageFace;
+
+                const fileInfo = await FileSystem.getInfoAsync(imageUri);
+                if (!fileInfo.exists) {
+                    throw new Error("File does not exist");
+                }
+
+                const resizedImage = await ImageManipulator.manipulateAsync(
+                    imageFace,
+                    [{ resize: { width: 800 } }], // Resize width, giữ aspect ratio
+                    { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
+                )
+
+                // Tạo FormData
+                const formData: any = new FormData();
+                formData.append('portrait_image', {
+                    uri: resizedImage.uri,
+                    type: 'image/jpeg', // Định dạng ảnh
+                    name: 'ocr.jpeg', // Tên file
+                });
+                formData.append('front_image', user.image[0])
+
+                // Gửi request lên server
+                const res = await post(
+                    'kyc/compare-face',
+                    formData,
+                    {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                    true
+                );
+                (navigation as any).replace('FaceTransactionRegisterSuccess', { portrait: result.assets[0].uri });
             }
         } catch (error) {
             Alert.alert('Error', 'Cannot open the camera');
@@ -38,6 +90,10 @@ export default function FaceRegisterTransaction() {
             setIsLoading(false);
         }
     };
+
+    useEffect(() => {
+        handleGetMe()
+    }, [])
 
     return (
         <View style={styles.container}>
@@ -59,7 +115,6 @@ export default function FaceRegisterTransaction() {
                     onPress={captureFace}
                     disabled={isLoading}
                 >
-
                     <>
                         <MaterialIcons name="photo-camera" size={24} color="white" />
                         <Text style={styles.buttonText}>NEXT</Text>

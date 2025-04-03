@@ -47,7 +47,7 @@ const FaceCaptureV2Success = ({ route }: { route: { params: { portrait_image: an
 
             // Gửi request lên server
             const res = await post(
-                'kyc/compare-face',
+                'kyc/compare-face-v2',
                 formData,
                 {
                     'Content-Type': 'multipart/form-data',

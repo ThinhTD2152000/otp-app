@@ -2,16 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Alert, Modal } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { put } from '@/fetch/apiClient';
 
 const TransactionMethodScreen = ({ route }: {
     route: {
         params: {
             isOpenFace: any,
-            isOpenOTP: any
+            isOpenOTP: any,
+            userId: any
         }
     }
 }) => {
-    const { isOpenFace, isOpenOTP }: any = route?.params;
+    const { isOpenFace, isOpenOTP, userId }: any = route?.params;
     const [selectedMethods, setSelectedMethods] = useState<string[]>([]);
 
     const navigation = useNavigation();
@@ -34,12 +36,51 @@ const TransactionMethodScreen = ({ route }: {
         }
     ];
 
+    const handleCancelPayment = async (methodCancel: any) => {
+        const newData: any = {};
+
+        if (methodCancel === 'face') {
+            newData.isOpenFace = false;
+        } else {
+            newData.isOpenOTP = false;
+        }
+
+        try {
+            await put(`users/${userId}`, newData);
+            (navigation as any).navigate('Home');
+
+        } catch (error) {
+            throw error;
+        }
+    }
+
     const handleContinue = () => {
-        if (selectedMethods.length !== 1) {
+        if (selectedMethods.length === 0) {
             Alert.alert('Notification', 'Please select exactly one registration method');
             return;
+        } else if (selectedMethods.length === 2) {
+            if (isOpenFace && isOpenOTP) {
+                Alert.alert('Notification', 'You have registered this method');
+                return;
+            } else if (isOpenFace && !isOpenOTP) {
+
+                (navigation as any).navigate('SmartOtpRegister');
+            }
+            else if (!isOpenFace && isOpenOTP) {
+
+                (navigation as any).navigate('FaceRegister');
+            } else {
+                Alert.alert('Notification', 'Please select only one registration method');
+                return;
+            }
+
+        } else if (selectedMethods.length === 1) {
+            if ((isOpenFace && selectedMethods.includes('face')) || (isOpenOTP && selectedMethods.includes('otp'))) {
+                Alert.alert('Notification', 'You have registered this method');
+            } else {
+                (navigation as any).navigate(selectedMethods[0] === 'face' ? 'FaceRegister' : 'SmartOtpRegister');
+            }
         }
-        (navigation as any).navigate(selectedMethods[0] === 'face' ? 'FaceRegister' : 'SmartOtpRegister');
     };
 
     const handleMethodPress = (methodId: string) => {
@@ -47,18 +88,18 @@ const TransactionMethodScreen = ({ route }: {
             // Show confirmation when unchecking
             if ((methodId === 'face' && isOpenFace) || (methodId === 'otp' && isOpenOTP)) {
                 Alert.alert(
-                    'Xác nhận',
-                    'Bạn có chắc chắn muốn bỏ chọn phương thức này không?',
+                    'Confirm',
+                    'Are you sure you want to deselect this method?',
                     [
                         {
-                            text: 'Không',
+                            text: 'No',
                             style: 'cancel',
                             onPress: () => { } // Không làm gì
                         },
                         {
-                            text: 'Có',
+                            text: 'Yes',
                             onPress: () => {
-                                setSelectedMethods(selectedMethods.filter(id => id !== methodId));
+                                handleCancelPayment(methodId)
                             }
                         }
                     ]
@@ -82,6 +123,9 @@ const TransactionMethodScreen = ({ route }: {
         }
         setSelectedMethods([...newData])
     }, [])
+
+    useEffect(() => {
+    }, [selectedMethods])
 
     return (
         <SafeAreaView style={styles.container}>
@@ -142,10 +186,10 @@ const TransactionMethodScreen = ({ route }: {
             <TouchableOpacity
                 style={[
                     styles.continueButton,
-                    selectedMethods.length !== 1 && styles.disabledButton
+                    selectedMethods.length === 0 && styles.disabledButton
                 ]}
                 onPress={handleContinue}
-                disabled={selectedMethods.length !== 1}
+                disabled={selectedMethods.length === 0}
             >
                 <Text style={styles.continueText}>NEXT</Text>
             </TouchableOpacity>

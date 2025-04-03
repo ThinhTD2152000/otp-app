@@ -13,6 +13,8 @@ const FaceCaptureSuccess = ({ route }: { route: { params: { portrait_image: any,
 
     const image = route.params
 
+    console.log(image.imageOcr)
+
     const navigation = useNavigation();
 
     const handleCompare = async () => {
@@ -56,7 +58,6 @@ const FaceCaptureSuccess = ({ route }: { route: { params: { portrait_image: any,
             );
             setData(res);
         } catch (error) {
-            console.log(error)
         } finally {
             setIsLoading(false);
         }
@@ -118,7 +119,7 @@ const FaceCaptureSuccess = ({ route }: { route: { params: { portrait_image: any,
                         {/* Nút quay lại màu xanh */}
                         <TouchableOpacity
                             style={styles.backButton_error}
-                            onPress={() => (navigation as any).replace('FaceCaptureV2')}
+                            onPress={() => (navigation as any).replace('FaceCaptureV2', { imageOcr: image.imageOcr })}
                         >
                             <Text style={styles.buttonText_error}>BACK</Text>
                         </TouchableOpacity>

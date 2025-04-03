@@ -6,7 +6,7 @@ import LoadingIndicator from '@/components/Loading';
 import * as FileSystem from "expo-file-system";
 import * as ImageManipulator from "expo-image-manipulator";
 
-const IDCardResultScreen = ({ route }: { route: { params: { ocrData: any } } }) => {
+const IDCardResultV2Screen = ({ route }: { route: { params: { ocrData: any } } }) => {
 
     const testImage = require('@/assets/images/ocr.jpeg')
     const [data, setData] = useState<any>(null)
@@ -248,4 +248,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default IDCardResultScreen;
+export default IDCardResultV2Screen;

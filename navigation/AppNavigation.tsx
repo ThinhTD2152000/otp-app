@@ -22,6 +22,8 @@ import PinRegistrationScreen from '@/app/verfiyAccount/registerPIN/register-pin'
 import IDCardResultScreen from '@/app/verfiyAccount/ipCapture/id-result';
 import FaceCaptureSuccess from '@/app/verfiyAccount/faceCapture/face-capture-success';
 import FaceTransactionRegisterSuccess from '@/app/registerTransaction/transactionFace/transaction-face-success';
+import IDCaptureV2Screen from '@/app/verfiyAccount/ipCapture/ip-capture-v2';
+import FaceCaptureV2Screen from '@/app/verfiyAccount/faceCapture/face-capture-v2';
 
 const Stack = createNativeStackNavigator();
 
@@ -31,6 +33,7 @@ export default function AppNavigator() {
         <Stack.Navigator initialRouteName="Default">
             <Stack.Screen name="Home" component={HomeScreen} />
             <Stack.Screen name="FaceCapture" component={FaceCaptureScreen} />
+            <Stack.Screen name="FaceCaptureV2" component={FaceCaptureV2Screen} />
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="FaceRegister" component={FaceRegisterTransaction} />
             <Stack.Screen name="IdCapture" component={IDCaptureScreen} />
@@ -43,6 +46,7 @@ export default function AppNavigator() {
             <Stack.Screen name="Default" component={AuthScreen} />
             <Stack.Screen name="RegisterAccount" component={RegisterAccountScreen} />
             <Stack.Screen name="IdCardResult" component={IDCardResultScreen} />
+            <Stack.Screen name="IdCardResultV2" component={IDCaptureV2Screen} />
             <Stack.Screen name="TransferBank" component={TransferBankScreen} />
             <Stack.Screen name="TransferBankConfirm" component={TransferBankConfirm} />
             <Stack.Screen name="TransferBankSuccess" component={TransferSuccess} />
@@ -50,7 +54,9 @@ export default function AppNavigator() {
             <Stack.Screen name="TransferConfirmOTP" component={TransferConfirmOTP} />
             <Stack.Screen name="TransferSendOTP" component={TransferSendOTP} />
             <Stack.Screen name="FaceCaptureSuccess" component={FaceCaptureSuccess} />
+            <Stack.Screen name="FaceCaptureV2Success" component={FaceCaptureV2Screen} />
             <Stack.Screen name="FaceTransactionRegisterSuccess" component={FaceTransactionRegisterSuccess} />
+            <Stack.Screen name="IDCaptureV2Screen" component={IDCaptureV2Screen} />
         </Stack.Navigator>
     );
 }

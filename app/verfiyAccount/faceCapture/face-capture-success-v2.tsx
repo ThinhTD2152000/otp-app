@@ -6,7 +6,7 @@ import { post } from '@/fetch/apiClient';
 import * as FileSystem from "expo-file-system";
 import * as ImageManipulator from "expo-image-manipulator";
 
-const FaceCaptureSuccess = ({ route }: { route: { params: { portrait_image: any, imageOcr: any } } }) => {
+const FaceCaptureV2Success = ({ route }: { route: { params: { portrait_image: any, imageOcr: any } } }) => {
     const [isLoading, setIsLoading] = useState<boolean>(true)
     const [data, setData] = useState<any>(null)
 
@@ -226,4 +226,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default FaceCaptureSuccess;
+export default FaceCaptureV2Success;

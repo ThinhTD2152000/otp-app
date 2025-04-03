@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { MaterialIcons, AntDesign } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { post } from '@/fetch/apiClient';
 
-const TransferConfirmOTP = () => {
+const TransferConfirmOTP = ({ route }: any) => {
     const [pin, setPin] = useState('');
     const [loading, setLoading] = useState(false);
     const navigation = useNavigation();
+
+    const amount = route.params.amount
 
     const handleNumberPress = (num: string) => {
         if (pin.length < 4) {
@@ -23,17 +26,18 @@ const TransferConfirmOTP = () => {
     const verifyPin = async () => {
         setLoading(true);
 
-        // Giả lập gọi API
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        if (pin === '1234') { // Thay bằng API thực tế
-            (navigation as any).replace('TransferSendOTP');
-        } else {
-            Alert.alert('Lỗi', 'Mã PIN không chính xác');
+        try {
+            const res = await post('otp/verify-pin', { pin: pin })
+            if (res.success) {
+                (navigation as any).replace('TransferSendOTP', { amount: amount, secretKey: res.secretKey });
+            }
+        } catch (error) {
+            Alert.alert('Error', 'An error occurred while verifying the PIN. Please try again.');
             setPin('');
+        } finally {
+            setLoading(false);
         }
 
-        setLoading(false);
     };
 
     const renderDots = () => {
@@ -98,7 +102,7 @@ const TransferConfirmOTP = () => {
                 >
                     <View style={styles.buttonContent}>
                         <AntDesign name="arrowleft" size={20} color="#007AFF" />
-                        <Text style={styles.backText}>Quay lại</Text>
+                        <Text style={styles.backText}>BACK</Text>
                     </View>
                 </TouchableOpacity>
 
@@ -114,7 +118,7 @@ const TransferConfirmOTP = () => {
                         {loading ? (
                             <ActivityIndicator color="white" />
                         ) : (
-                            <Text style={styles.verifyText}>XÁC THỰC</Text>
+                            <Text style={styles.verifyText}>CONFIRM</Text>
                         )}
                     </View>
                 </TouchableOpacity>

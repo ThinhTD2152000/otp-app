@@ -1,74 +1,120 @@
+import { post } from '@/fetch/apiClient';
 import { useNavigation } from '@react-navigation/native';
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native'
+import * as Crypto from 'expo-crypto';
 
-const TransferSendOTP = () => {
+const TransferSendOTP = ({ route }: any) => {
     const [otp, setOtp] = useState('');
-    const [countdown, setCountdown] = useState(60);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
 
     const navigation = useNavigation()
 
-    // Giả lập API trả về OTP (6 chữ số)
-    useEffect(() => {
-        // Trong thực tế, bạn sẽ gọi API ở đây
-        const fakeApiCall = async () => {
-            // Giả lập delay gọi API
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-            setOtp(generatedOtp);
-        };
+    const { amount, secretKey } = route.params
 
-        fakeApiCall();
-    }, []);
+    const generateNumericOTP = useCallback(async (): Promise<string> => {
+        try {
+            const timestamp = Math.floor(Date.now() / 30000);
+            const input = `${timestamp}-${secretKey}`;
 
-    // Countdown timer
-    useEffect(() => {
-        if (countdown > 0) {
-            const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
-            return () => clearTimeout(timer);
+            const digest = await Crypto.digestStringAsync(
+                Crypto.CryptoDigestAlgorithm.SHA256,
+                input
+            );
+
+            const bigNum = BigInt('0x' + digest);
+            return bigNum.toString().slice(-6).padStart(6, '0');
+        } catch (err) {
+            console.error('Error generating OTP:', err);
+            throw err;
         }
-    }, [countdown]);
+    }, [secretKey]);
 
-    const handleResendOtp = () => {
-        // Gọi lại API để lấy OTP mới
-        const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
-        setOtp(newOtp);
-        setCountdown(60);
+    // Cập nhật OTP và reset countdown
+    const updateOTP = useCallback(async () => {
+        setIsLoading(true);
+        try {
+            const newOtp = await generateNumericOTP();
+            setOtp(newOtp);
+            setError(null);
+        } catch (err) {
+            setError('Không thể tạo OTP. Vui lòng thử lại.');
+            console.error('OTP generation failed:', err);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [generateNumericOTP]);
+
+    // Xác thực OTP
+    const handleVerifyOTP = async () => {
+        if (!otp) return;
+
+        try {
+            setIsLoading(true);
+            const res = await post('otp/verify-otp', {
+                otp: otp,
+                secretKey: secretKey
+            });
+
+            console.log('Verification response:', res);
+            (navigation as any).replace('SuccessTransaction');
+        } catch (error) {
+            console.error('Error verifying OTP:', error);
+            setError('Xác thực thất bại. Vui lòng thử lại.');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
-    const handleConfirm = () => {
-        // Xử lý xác nhận OTP
-        console.log('Xác nhận OTP:', otp);
-        (navigation as any).replace('SuccessTransaction')
-    };
+    const handelResOTP = async () => {
+        try {
+            const res = await post('otp/generate-otp', { secretKey: secretKey });
+            console.log(res)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    // Effect cho countdown và tự động cập nhật OTP
+    useEffect(() => {
+        updateOTP(); // Tạo OTP lần đầu
+        handelResOTP()
+        console.log('OTP:', otp);
+
+    }, []);
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Mã Smart OTP của bạn</Text>
+            <Text style={styles.title}>Your Smart OTP code</Text>
+
+            {error && (
+                <Text style={styles.errorText}>{error}</Text>
+            )}
 
             <View style={styles.otpContainer}>
-                {otp ? (
+                {isLoading ? (
+                    <ActivityIndicator size="large" color="#4CAF50" />
+                ) : (
                     otp.split('').map((digit, index) => (
                         <View key={index} style={styles.otpBox}>
                             <Text style={styles.otpText}>{digit}</Text>
                         </View>
                     ))
-                ) : (
-                    <Text>Đang tải mã OTP...</Text>
                 )}
             </View>
 
             <TouchableOpacity
-                style={styles.confirmButton}
-                onPress={handleConfirm}
-                disabled={!otp}
+                style={[styles.confirmButton, (!otp || isLoading) && styles.disabledButton]}
+                onPress={handleVerifyOTP}
+                disabled={!otp || isLoading}
             >
-                <Text style={styles.confirmButtonText}>Xác nhận</Text>
+                {isLoading ? (
+                    <ActivityIndicator color="#fff" />
+                ) : (
+                    <Text style={styles.confirmButtonText}>CONFIRM</Text>
+                )}
             </TouchableOpacity>
-
-            <View style={styles.resendContainer}>
-                <Text style={styles.resendText}>Mã OTP sẽ hết hạn sau: {countdown}s</Text>
-            </View>
         </View>
     );
 };
@@ -87,10 +133,17 @@ const styles = StyleSheet.create({
         marginBottom: 30,
         color: '#333',
     },
+    errorText: {
+        color: '#FF3B30',
+        marginBottom: 15,
+        textAlign: 'center',
+    },
     otpContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
         marginBottom: 30,
+        minHeight: 70,
+        alignItems: 'center',
     },
     otpBox: {
         width: 50,
@@ -109,16 +162,15 @@ const styles = StyleSheet.create({
         color: '#333',
     },
     confirmButton: {
-        backgroundColor: '#007AFF',
+        backgroundColor: '#4CAF50',
         paddingVertical: 15,
         paddingHorizontal: 40,
         borderRadius: 8,
         width: '80%',
         alignItems: 'center',
-        opacity: 1,
     },
-    confirmButtonDisabled: {
-        opacity: 0.5,
+    disabledButton: {
+        backgroundColor: '#A5D6A7',
     },
     confirmButtonText: {
         color: '#fff',
@@ -132,10 +184,6 @@ const styles = StyleSheet.create({
     resendText: {
         color: '#666',
         marginBottom: 10,
-    },
-    resendLink: {
-        color: '#4CAF50',
-        fontWeight: 'bold',
     },
 });
 

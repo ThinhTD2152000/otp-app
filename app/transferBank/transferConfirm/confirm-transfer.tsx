@@ -56,8 +56,6 @@ const TransferBankConfirm = ({ route }: {
             return;
         }
 
-        console.log(transferAmount, senderInfo?.balance)
-
         if (transferAmount > senderInfo?.balance) {
             Alert.alert(
                 'Insufficient Balance',
@@ -75,8 +73,6 @@ const TransferBankConfirm = ({ route }: {
             setIsConfirming(false);
             (navigation as any).navigate(paymentMethod === 'face' ? 'TransferConfirmFace' : 'TransferConfirmOTP', {
                 amount: transferAmount,
-                receiver: receiverInfo.name,
-                receiverBank: receiverInfo.bank
             });
         }, 1500);
     };

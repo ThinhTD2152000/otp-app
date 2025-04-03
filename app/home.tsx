@@ -17,7 +17,6 @@ const HomeScreen = () => {
             console.log(res)
             setData(res)
         } catch (error) {
-            Alert
         } finally {
             setIsLoading(false)
 

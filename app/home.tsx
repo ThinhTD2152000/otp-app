@@ -14,6 +14,7 @@ const HomeScreen = () => {
     const handleGetMe = async () => {
         try {
             const res = await getMe()
+            console.log(res)
             setData(res)
         } catch (error) {
             Alert
@@ -91,7 +92,7 @@ const HomeScreen = () => {
                         style={styles.registerButton}
                         onPress={() => (navigation as any).navigate('TransactionRegister', {
                             isOpenFace: data?.isOpenFace,
-                            isOpenOTP: !data?.isOpenOTP
+                            isOpenOTP: data?.isOpenOTP
                         })}
                     >
                         <MaterialIcons name="payment" size={24} color="white" />
@@ -100,7 +101,7 @@ const HomeScreen = () => {
                 }
 
                 {
-                    !(data?.isOpenOTP || data?.isOpenFace) &&
+                    (data?.isOpenOTP || data?.isOpenFace) &&
                     <TouchableOpacity
                         style={styles.registerButton}
                         onPress={() => (navigation as any).navigate('TransferBank')}

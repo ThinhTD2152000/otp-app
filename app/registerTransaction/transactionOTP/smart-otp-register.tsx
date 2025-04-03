@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { MaterialIcons, AntDesign } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { post } from '@/fetch/apiClient';
+import { post, put } from '@/fetch/apiClient';
 
 const PinVerificationScreen = () => {
     const [pin, setPin] = useState('');
@@ -27,8 +27,10 @@ const PinVerificationScreen = () => {
         // Giả lập gọi API
         try {
             const res = await post('otp/verify-pin', { pin: pin })
+            // (navigation as any).replace('SuccessTransaction');
             if (res.success) {
-                (navigation as any).replace('VerifySmartOtp', { secretKey: res.secretKey });
+                const resUpDate = put('users/67ecbbc51c80f4d7297679ed', { isOpenOtp: true })
+                console.log('update', resUpDate)
             }
         } catch (error) {
             Alert.alert('Error', 'An error occurred while verifying the PIN. Please try again.');

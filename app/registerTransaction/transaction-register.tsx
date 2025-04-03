@@ -45,23 +45,27 @@ const TransactionMethodScreen = ({ route }: {
     const handleMethodPress = (methodId: string) => {
         if (selectedMethods.includes(methodId)) {
             // Show confirmation when unchecking
-            Alert.alert(
-                'Xác nhận',
-                'Bạn có chắc chắn muốn bỏ chọn phương thức này không?',
-                [
-                    {
-                        text: 'Không',
-                        style: 'cancel',
-                        onPress: () => { } // Không làm gì
-                    },
-                    {
-                        text: 'Có',
-                        onPress: () => {
-                            setSelectedMethods(selectedMethods.filter(id => id !== methodId));
+            if ((methodId === 'face' && isOpenFace) || (methodId === 'otp' && isOpenOTP)) {
+                Alert.alert(
+                    'Xác nhận',
+                    'Bạn có chắc chắn muốn bỏ chọn phương thức này không?',
+                    [
+                        {
+                            text: 'Không',
+                            style: 'cancel',
+                            onPress: () => { } // Không làm gì
+                        },
+                        {
+                            text: 'Có',
+                            onPress: () => {
+                                setSelectedMethods(selectedMethods.filter(id => id !== methodId));
+                            }
                         }
-                    }
-                ]
-            );
+                    ]
+                );
+            } else {
+                setSelectedMethods(selectedMethods.filter(id => id !== methodId));
+            }
         } else {
             // When checking new method, add to current selection
             setSelectedMethods([...selectedMethods, methodId]);

@@ -48,9 +48,9 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     successImage: {
-        width: 200,
+        width: 400,
         height: 200,
-        marginBottom: 30,
+        marginBottom: 10,
     },
     successMessage: {
         fontSize: 16,

@@ -32,14 +32,13 @@ const TransferBankConfirm = ({ route }: {
             Alert
         } finally {
             setIsLoading(false)
-
         }
     }
 
     const [senderInfo] = useState({
         name: 'NGUYEN VAN A',
         account: '1234567890',
-        balance: user?.balance || 0, // 1,000,000 VND
+        balance: user?.balance || 0,
         bank: 'Vietcombank'
     });
 
@@ -91,8 +90,6 @@ const TransferBankConfirm = ({ route }: {
     useEffect(() => {
         handleGetMe()
     }, [])
-
-
 
     return (
         isLoading ? (

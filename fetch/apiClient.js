@@ -1,4 +1,4 @@
-const BASE_URL = 'https://5955-2402-800-61c5-60b0-c58b-bc61-32a1-8bd7.ngrok-free.app';
+const BASE_URL = 'https://8cb4-112-137-129-179.ngrok-free.app';
 
 // Biến lưu trữ token trong memory
 let authToken = null;
@@ -47,6 +47,8 @@ const fetchData = async (endpoint, options = {}) => {
       responseData = await response.text();
     }
 
+    console.log(responseData);
+
     if (!response.ok) {
       const errorMessage =
         responseData?.message ||
@@ -79,5 +81,7 @@ export const post = async (
 ) => await fetchData(endpoint, { method: 'POST', body, headers, isFileUpload });
 export const put = async (endpoint, body, headers = {}) =>
   await fetchData(endpoint, { method: 'PUT', body, headers });
+
+//Delete
 export const del = async (endpoint, headers = {}) =>
   await fetchData(endpoint, { method: 'DELETE', headers });

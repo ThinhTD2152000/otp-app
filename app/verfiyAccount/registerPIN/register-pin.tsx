@@ -13,7 +13,7 @@ const PinRegistrationScreen = () => {
     const [step, setStep] = useState(1); // 1: Nhập PIN, 2: Xác nhận PIN
 
     const handleRegisterPin = async () => {
-        console.log(pin)
+        console.log('pin', pin)
         try {
             // Gọi API để cập nhật PIN
             const res: any = await put('users/update-pin', { pin });

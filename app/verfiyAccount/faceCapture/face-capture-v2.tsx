@@ -31,7 +31,7 @@ export default function FaceCaptureV2Screen({ route }: { route: { params: { imag
             });
 
             if (!result.canceled) {
-                (navigation as any).replace('FaceCaptureSuccess', { portrait_image: result.assets[0].uri, imageOcr: imageOcr });
+                (navigation as any).replace('FaceCaptureV2Success', { portrait_image: result.assets[0].uri, imageOcr: imageOcr });
             }
 
         } catch (error) {

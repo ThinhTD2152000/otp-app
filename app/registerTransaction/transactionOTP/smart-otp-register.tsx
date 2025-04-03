@@ -24,11 +24,11 @@ const PinVerificationScreen = () => {
     const verifyPin = async () => {
         setLoading(true);
 
-        // Giả lập gọi API
+        // gọi API
         try {
             const res = await post('otp/verify-pin', { pin: pin })
             if (res.success) {
-                (navigation as any).replace('SuccessTransaction');
+                (navigation as any).replace('SuccessTransaction', { method: 'otp' });
             }
         } catch (error) {
             Alert.alert('Error', 'An error occurred while verifying the PIN. Please try again.');

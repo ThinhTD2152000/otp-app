@@ -39,6 +39,7 @@ const TransactionMethodScreen = ({ route }: {
             Alert.alert('Notification', 'Please select exactly one registration method');
             return;
         }
+
         (navigation as any).navigate(selectedMethods[0] === 'face' ? 'FaceRegister' : 'SmartOtpRegister');
     };
 

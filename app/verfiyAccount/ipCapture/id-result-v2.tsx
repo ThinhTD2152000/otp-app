@@ -3,8 +3,6 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Alert, Pla
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { post } from '@/fetch/apiClient';
 import LoadingIndicator from '@/components/Loading';
-import * as FileSystem from "expo-file-system";
-import * as ImageManipulator from "expo-image-manipulator";
 
 const IDCardResultV2Screen = ({ route }: { route: { params: { ocrData: any } } }) => {
 
@@ -32,24 +30,9 @@ const IDCardResultV2Screen = ({ route }: { route: { params: { ocrData: any } } }
                 throw new Error("No image selected");
             }
 
-            // 📌 Xóa 'file://' trên iOS nếu có
-            const imageUri = Platform.OS === "ios" ? ocrData.replace("file://", "") : ocrData;
-
-            // 📌 Kiểm tra file có tồn tại không
-            const fileInfo = await FileSystem.getInfoAsync(imageUri);
-            if (!fileInfo.exists) {
-                throw new Error("File does not exist");
-            }
-
-            const resizedImage = await ImageManipulator.manipulateAsync(
-                ocrData,
-                [{ resize: { width: 800 } }], // Resize width, giữ aspect ratio
-                { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
-            );
-
             const formData: any = new FormData();
             formData.append("image", {
-                uri: resizedImage.uri,
+                uri: Image.resolveAssetSource(testImage).uri,
                 type: "image/jpeg",
                 name: "ocr.jpg",
             });

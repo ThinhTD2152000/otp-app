@@ -7,77 +7,86 @@ import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 
 const TransactionSuccessScreen = ({ route }: { route: { params: { method: string } } }) => {
     const navigation = useNavigation();
-    const [user, setUser] = useState<any>(null);
-    const [isLoading, setIsLoading] = useState<Boolean>(true)
-
-    const method = route.params?.method
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const method = route.params?.method;
 
     const handleGetMe = async () => {
         try {
-            const res = await getMe()
-            console.log(res)
-            setUser(res)
+            const res = await getMe();
+            if (res?._id) {
+                return res._id; // Trả về id để sử dụng trong hàm tiếp theo
+            } else {
+                throw new Error('User ID not found');
+            }
         } catch (error) {
-        } finally {
-            setIsLoading(false)
+            throw error; // Ném lỗi để xử lý ở nơi gọi
         }
-    }
+    };
 
-    //update is method to face or smart otp
-    const handleUpdatePayment = async () => {
-        const newData: any = {}
+    const handleUpdatePayment = async (userId: string) => {
+        const newData: any = {};
 
         if (method === 'face') {
-            newData.isOpenFace = true
+            newData.isOpenFace = true;
         } else {
-            newData.isOpenOTP = true
+            newData.isOpenOTP = true;
         }
+
         try {
-            const res = put(`users/${user.id}`, newData)
-            console.log(res)
+            await put(`users/${userId}`, newData);
         } catch (error) {
-            console.log(error)
+            throw error;
         } finally {
-            setIsLoading(false)
+            setIsLoading(false);
         }
-    }
+    };
 
     useEffect(() => {
-        handleGetMe()
-        handleUpdatePayment()
-    }, [])
+        const initialize = async () => {
+            try {
+                const userId = await handleGetMe(); // Lấy id từ handleGetMe
+                if (userId) {
+                    await handleUpdatePayment(userId); // Truyền id vào handleUpdatePayment
+                }
+            } catch (error) {
+            }
+        };
 
+        initialize();
+    }, []);
 
-    return (
-        isLoading ? (
+    if (isLoading) {
+        return (
             <View style={styles.containerImage}>
                 <LoadingIndicator />
             </View>
-        ) : (
-            <View style={styles.container}>
-                {/* Hình ảnh success */}
-                <Image
-                    source={require('@/assets/images/success.jpg')}
-                    style={styles.successImage}
-                    resizeMode="contain"
-                />
+        );
+    }
 
-                {/* Thông báo */}
-                <Text style={styles.successMessage}>
-                    {method === ' face' ? 'You have successfully validated your face transaction!' : 'You have successfully verified the transaction with smart OTP!'}
-                </Text>
+    return (
+        <View style={styles.container}>
+            <Image
+                source={require('@/assets/images/success.jpg')}
+                style={styles.successImage}
+                resizeMode="contain"
+            />
 
-                {/* Nút Home màu xanh dương */}
-                <TouchableOpacity
-                    style={styles.homeButton}
-                    onPress={() => (navigation as any).replace('Home')}
-                >
-                    <Text style={styles.buttonText}>Home</Text>
-                </TouchableOpacity>
-            </View>
-        )
+            <Text style={styles.successMessage}>
+                {method === 'face'
+                    ? 'You have successfully validated your face transaction!'
+                    : 'You have successfully verified the transaction with smart OTP!'}
+            </Text>
+
+            <TouchableOpacity
+                style={styles.homeButton}
+                onPress={() => (navigation as any).replace('Home')}
+            >
+                <Text style={styles.buttonText}>Home</Text>
+            </TouchableOpacity>
+        </View>
     );
 };
+
 
 const styles = StyleSheet.create({
     container: {

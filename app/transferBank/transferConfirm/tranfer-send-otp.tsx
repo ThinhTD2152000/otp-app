@@ -13,6 +13,8 @@ const TransferSendOTP = ({ route }: any) => {
 
     const { amount, secretKey } = route.params
 
+    console.log(secretKey)
+
     const generateNumericOTP = useCallback(async (): Promise<string> => {
         try {
             const timestamp = Math.floor(Date.now() / 30000);

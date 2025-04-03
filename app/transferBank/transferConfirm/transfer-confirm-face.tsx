@@ -66,7 +66,7 @@ export default function TransferConfirmFace() {
                         ) : (
                             <>
                                 <MaterialIcons name="photo-camera" size={24} color="white" />
-                                <Text style={styles.buttonText}>TIẾP TỤC</Text>
+                                <Text style={styles.buttonText}>NEXT</Text>
                             </>
                         )}
                     </TouchableOpacity>
@@ -82,7 +82,7 @@ export default function TransferConfirmFace() {
                             style={styles.confirmButton}
                             onPress={() => (navigation as any).replace('SuccessTransaction')}
                         >
-                            <Text style={styles.buttonText}>TIẾP TỤC</Text>
+                            <Text style={styles.buttonText}>NEXT</Text>
                         </TouchableOpacity>
                     </View>
                 </View>

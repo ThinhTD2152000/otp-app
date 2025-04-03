@@ -91,7 +91,8 @@ const HomeScreen = () => {
                         style={styles.registerButton}
                         onPress={() => (navigation as any).navigate('TransactionRegister', {
                             isOpenFace: data?.isOpenFace,
-                            isOpenOTP: data?.isOpenOTP
+                            isOpenOTP: data?.isOpenOTP,
+                            userId: data?._id
                         })}
                     >
                         <MaterialIcons name="payment" size={24} color="white" />

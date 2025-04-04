@@ -58,7 +58,7 @@ const TransferSendOTP = ({ route }: any) => {
                 money: Number(amount)
             });
 
-            (navigation as any).replace('SuccessTransaction');
+            (navigation as any).replace('TransferSuccessScreen');
         } catch (error) {
             console.error('Error verifying OTP:', error);
             setError('Verify failed.');

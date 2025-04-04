@@ -13,8 +13,6 @@ const FaceCaptureSuccess = ({ route }: { route: { params: { portrait_image: any,
 
     const image = route.params
 
-    console.log(image.imageOcr)
-
     const navigation = useNavigation();
 
     const handleCompare = async () => {

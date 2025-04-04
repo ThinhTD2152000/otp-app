@@ -1,53 +1,69 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Alert, Platform, ActivityIndicator } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Alert, Platform } from 'react-native';
 import { MaterialIcons, AntDesign } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
+import { post } from '@/fetch/apiClient';
+
 
 const { width } = Dimensions.get('window');
 
 export default function FaceRegisterTransaction() {
-    const navigation = useNavigation();
-    const captureFace = async () => {
+    const [isLoading, setIsLoading] = useState(false);
 
+    const navigation = useNavigation()
+
+    const captureFace = async () => {
+        setIsLoading(true);
         try {
-            // Check and request camera permissions
             const { status } = await ImagePicker.requestCameraPermissionsAsync();
             if (status !== 'granted') {
-                Alert.alert('Permission Required', 'Please grant camera permissions to continue');
+                Alert.alert('Notification', 'Please grant permission to access the camera');
                 return;
             }
 
-            // Launch camera
             const result: any = await ImagePicker.launchCameraAsync({
                 mediaType: ImagePicker.MediaTypeOptions.Images,
                 allowsEditing: false,
-                aspect: [1, 1],
+                aspect: [1, 1], // Tỉ lệ vuông cho ảnh chân dung
                 quality: 0.8,
                 base64: true
             });
 
             if (!result.canceled) {
-                (navigation as any).replace('HandleFaceTransaction', {
-                    portrait: result.assets[0].uri
-                });
+                const newRes = await handleCreateSession()
+                if (newRes) {
+                    (navigation as any).replace('FaceTransactionRegisterSuccess', { portrait: result.assets[0].uri });
+                }
             }
-
-            // Navigate to success screen
-
-        } catch (error: any) {
-            console.error('Face capture error:', error);
-            Alert.alert('Error', error.message || 'Failed to capture and process image');
+        } catch (error) {
+            Alert.alert('Error', 'Cannot open the camera');
         } finally {
+            setIsLoading(false);
         }
     };
+
+    const handleCreateSession = async () => {
+        try {
+            // Gọi API tạo session
+            const res = await post('kyc/create_session');
+            // Kiểm tra phản hồi từ API
+            return res?.data.access_token
+        } catch (error) {
+            // Xử lý lỗi khi gọi API
+            Alert.alert('Error', 'Please try again.');
+        }
+        return;
+    };
+
+
 
     return (
         <View style={styles.container}>
             <View style={styles.captureContainer}>
                 <Text style={styles.guideText}>ALIGN YOUR FACE WITHIN THE FRAME</Text>
                 <View style={styles.guideFrame}>
-                    <View style={styles.faceOutline}>
+                    <View style={styles.faceOutline} >
                         <AntDesign
                             name="user"
                             size={120}
@@ -58,8 +74,9 @@ export default function FaceRegisterTransaction() {
                 </View>
 
                 <TouchableOpacity
-                    style={[styles.captureButton]}
+                    style={styles.captureButton}
                     onPress={captureFace}
+                    disabled={isLoading}
                 >
                     <>
                         <MaterialIcons name="photo-camera" size={24} color="white" />
@@ -129,8 +146,39 @@ const styles = StyleSheet.create({
         shadowRadius: 6,
         elevation: 5
     },
-    disabledButton: {
-        opacity: 0.7
+    previewContainer: {
+        alignItems: 'center',
+        width: '100%'
+    },
+    previewImage: {
+        width: width - 60,
+        height: width - 60,
+        borderRadius: (width - 60) / 2,
+        borderWidth: 2,
+        borderColor: '#007AFF',
+        marginBottom: 30
+    },
+    actionButtons: {
+        flexDirection: 'row',
+        gap: 20
+    },
+    retakeButton: {
+        backgroundColor: '#FF3B30',
+        paddingVertical: 15,
+        paddingHorizontal: 25,
+        borderRadius: 30,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10
+    },
+    confirmButton: {
+        backgroundColor: '#007AFF',
+        paddingVertical: 15,
+        paddingHorizontal: 25,
+        borderRadius: 30,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10
     },
     buttonText: {
         color: 'white',

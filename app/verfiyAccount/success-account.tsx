@@ -33,7 +33,7 @@ const RegistrationSuccessScreen = () => {
                 style={styles.homeButton}
                 onPress={() => (navigation as any).replace('Home')}
             >
-                <Text style={styles.buttonText}>QUAY VỀ TRANG CHỦ</Text>
+                <Text style={styles.buttonText}>HOME</Text>
             </TouchableOpacity>
         </View>
     );

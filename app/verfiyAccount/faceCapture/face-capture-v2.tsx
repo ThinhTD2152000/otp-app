@@ -43,7 +43,6 @@ export default function FaceCaptureV2Screen({ route }: { route: { params: { imag
 
     return (
         <View style={styles.container}>
-            (
             <View style={styles.captureContainer}>
                 <Text style={styles.guideText}>ALIGN YOUR FACE WITHIN THE FRAME</Text>
                 <View style={styles.guideFrame}>
@@ -74,7 +73,6 @@ export default function FaceCaptureV2Screen({ route }: { route: { params: { imag
                     )}
                 </TouchableOpacity>
             </View>
-            )
         </View>
     );
 }
@@ -125,14 +123,14 @@ const styles = StyleSheet.create({
     },
     captureButton: {
         backgroundColor: '#007AFF',
-        paddingVertical: 15,
-        paddingHorizontal: 30,
+        paddingVertical: 5,
+        paddingHorizontal: 15,
         borderRadius: 30,
         flexDirection: 'row',
         alignItems: 'center',
         gap: 10,
         shadowColor: '#007AFF',
-        shadowOffset: { width: 0, height: 4 },
+        shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.3,
         shadowRadius: 6,
         elevation: 5
@@ -170,17 +168,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         gap: 10
-    },
-    textSuccess: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#4CAF50', // Màu xanh lá
-        marginBottom: 20,
-    },
-    textVerify: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 20,
     },
     buttonText: {
         color: 'white',

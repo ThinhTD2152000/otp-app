@@ -56,7 +56,7 @@ const FaceCaptureV2Success = ({ route }: { route: { params: { portrait_image: an
             );
             setData(res);
         } catch (error) {
-            console.log(error)
+            throw error
         } finally {
             setIsLoading(false);
         }

@@ -25,7 +25,7 @@ import IDCaptureV2Screen from '@/app/verfiyAccount/ipCapture/ip-capture-v2';
 import FaceCaptureV2Screen from '@/app/verfiyAccount/faceCapture/face-capture-v2';
 import IDCardResultV2Screen from '@/app/verfiyAccount/ipCapture/id-result-v2';
 import FaceCaptureV2Success from '@/app/verfiyAccount/faceCapture/face-capture-success-v2';
-import HandleFaceTransaction from '@/app/registerTransaction/transactionFace/handle-face-transaction';
+import FaceTransferSuccess from '@/app/transferBank/transferConfirm/transer-compare-face';
 
 const Stack = createNativeStackNavigator();
 
@@ -58,7 +58,7 @@ export default function AppNavigator() {
             <Stack.Screen name="FaceCaptureV2Success" component={FaceCaptureV2Success} />
             <Stack.Screen name="FaceTransactionRegisterSuccess" component={FaceTransactionRegisterSuccess} />
             <Stack.Screen name="IDCaptureV2Screen" component={IDCaptureV2Screen} />
-            <Stack.Screen name="HandleFaceTransaction" component={HandleFaceTransaction} />
+            <Stack.Screen name="FaceTransferSuccess" component={FaceTransferSuccess} />
         </Stack.Navigator>
     );
 }

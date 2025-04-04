@@ -14,7 +14,6 @@ const HomeScreen = () => {
     const handleGetMe = async () => {
         try {
             const res = await getMe()
-            console.log(res)
             setData(res)
         } catch (error) {
         } finally {
@@ -30,7 +29,6 @@ const HomeScreen = () => {
 
             // Kiểm tra phản hồi từ API
             if (res?.data.access_token) {
-                console.log('session', res?.data.access_token);
                 // Điều hướng đến màn hình TransactionRegister với các phương thức thanh toán
                 (navigation as any).navigate('IdCapture')
             } else {

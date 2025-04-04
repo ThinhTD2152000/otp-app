@@ -7,11 +7,11 @@ import * as FileSystem from "expo-file-system";
 import * as ImageManipulator from "expo-image-manipulator";
 import { getMe } from '@/fetch/authAPI';
 
-const FaceTransactionRegisterSuccess = ({ route }: { route: { params: { portrait: any } } }) => {
+const FaceTransferSuccess = ({ route }: { route: { params: { portrait: any, amount: any } } }) => {
     const [isLoading, setIsLoading] = useState<boolean>(true)
     const [data, setData] = useState<any>(null)
 
-    const portrait = route.params?.portrait
+    const { portrait, amount } = route.params
 
     const navigation = useNavigation();
 
@@ -45,17 +45,17 @@ const FaceTransactionRegisterSuccess = ({ route }: { route: { params: { portrait
 
             // Tạo FormData
             const formData: any = new FormData();
-            formData.append('portrait', {
+            formData.append('portrait_1', {
                 uri: resizedImage.uri,
                 type: 'image/jpeg', // Định dạng ảnh
                 name: 'ocr.jpeg', // Tên file
             });
 
-            formData.append('front_image', imageOcr)
+            formData.append('money', Number(amount))
 
             // Gửi request lên server
             const res = await post(
-                'kyc/open-face-v2',
+                'kyc/withdraw',
                 formData,
                 {
                     'Content-Type': 'multipart/form-data',
@@ -64,11 +64,6 @@ const FaceTransactionRegisterSuccess = ({ route }: { route: { params: { portrait
             );
             setData(res);
 
-            const newRes: any = {}
-            newRes.remoteResponse = {
-                response_code: 200
-            }
-            setData(newRes);
         } catch (error) {
             throw error
         } finally {
@@ -85,6 +80,7 @@ const FaceTransactionRegisterSuccess = ({ route }: { route: { params: { portrait
                     await handleCompare(userId); // Truyền id vào handleUpdatePayment
                 }
             } catch (error) {
+                throw error
             }
         };
 
@@ -119,7 +115,7 @@ const FaceTransactionRegisterSuccess = ({ route }: { route: { params: { portrait
                         </TouchableOpacity>
                     </View> : <View style={styles.container_error}>
                         {/* Tiêu đề màu đỏ */}
-                        <Text style={styles.errorTitle_error}>OCR Failed</Text>
+                        <Text style={styles.errorTitle_error}>Failed</Text>
 
                         {/* Hình ảnh thất bại */}
                         <Image
@@ -139,7 +135,7 @@ const FaceTransactionRegisterSuccess = ({ route }: { route: { params: { portrait
                             onPress={() => (navigation as any).replace('Home')}
 
                         >
-                            <Text style={styles.buttonText_error}>BACK</Text>
+                            <Text style={styles.buttonText_error}>HOME</Text>
                         </TouchableOpacity>
                     </View>
             ))
@@ -244,4 +240,4 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     }
 });
-export default FaceTransactionRegisterSuccess;
+export default FaceTransferSuccess;

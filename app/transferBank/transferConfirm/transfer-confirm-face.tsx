@@ -4,21 +4,23 @@ import { MaterialIcons, AntDesign } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import LoadingIndicator from '@/components/Loading';
 import { useNavigation } from '@react-navigation/native';
+import { post } from '@/fetch/apiClient';
 
 const { width } = Dimensions.get('window');
 
-export default function TransferConfirmFace() {
-    const [facePhoto, setFacePhoto] = useState(null);
+export default function TransferConfirmFace({ route }: any) {
     const [isLoading, setIsLoading] = useState(false);
 
     const navigation = useNavigation()
+
+    const amount = route.params.amount
 
     const captureFace = async () => {
         setIsLoading(true);
         try {
             const { status } = await ImagePicker.requestCameraPermissionsAsync();
             if (status !== 'granted') {
-                Alert.alert('Thông báo', 'Vui lòng cấp quyền truy cập camera');
+                Alert.alert('Notification', 'Please grant permission to access the camera');
                 return;
             }
 
@@ -31,62 +33,58 @@ export default function TransferConfirmFace() {
             });
 
             if (!result.canceled) {
-                setFacePhoto(result.assets[0].uri);
+                const newRes = await handleCreateSession()
+                if (newRes) {
+                    (navigation as any).replace('FaceTransferSuccess', { portrait: result.assets[0].uri, amount: amount });
+                }
             }
         } catch (error) {
-            Alert.alert('Lỗi', 'Không thể mở camera');
+            Alert.alert('Error', 'Cannot open the camera');
         } finally {
             setIsLoading(false);
         }
     };
 
+    const handleCreateSession = async () => {
+        try {
+            // Gọi API tạo session
+            const res = await post('kyc/create_session');
+            // Kiểm tra phản hồi từ API
+            return res?.data.access_token
+        } catch (error) {
+            // Xử lý lỗi khi gọi API
+            Alert.alert('Error', 'Please try again.');
+        }
+        return;
+    };
+
     return (
         <View style={styles.container}>
-            {!facePhoto ? (
-                <View style={styles.captureContainer}>
-                    <Text style={styles.guideText}>CĂN CHỈNH KHUÔN MẶT VÀO KHUNG HÌNH</Text>
-                    <View style={styles.guideFrame}>
-                        <View style={styles.faceOutline} >
-                            <AntDesign
-                                name="user"
-                                size={120}
-                                color="#007AFF"
-                                style={{ marginBottom: 15 }}
-                            />
-                        </View>
-                    </View>
-
-                    <TouchableOpacity
-                        style={styles.captureButton}
-                        onPress={captureFace}
-                        disabled={isLoading}
-                    >
-                        {isLoading ? (
-                            <ActivityIndicator color="white" />
-                        ) : (
-                            <>
-                                <MaterialIcons name="photo-camera" size={24} color="white" />
-                                <Text style={styles.buttonText}>NEXT</Text>
-                            </>
-                        )}
-                    </TouchableOpacity>
-                </View>
-            ) : (
-                <View style={styles.previewContainer}>
-                    <Image source={{ uri: facePhoto }} style={styles.previewImage} />
-
-                    <LoadingIndicator size={50} color='blue' />
-
-                    <View style={styles.actionButtons}>
-                        <TouchableOpacity
-                            style={styles.confirmButton}
-                            onPress={() => (navigation as any).replace('SuccessTransaction')}
-                        >
-                            <Text style={styles.buttonText}>NEXT</Text>
-                        </TouchableOpacity>
+            <View style={styles.captureContainer}>
+                <Text style={styles.guideText}>ALIGN YOUR FACE WITHIN THE FRAME</Text>
+                <View style={styles.guideFrame}>
+                    <View style={styles.faceOutline} >
+                        <AntDesign
+                            name="user"
+                            size={120}
+                            color="#007AFF"
+                            style={{ marginBottom: 15 }}
+                        />
                     </View>
                 </View>
-            )}
+
+                <TouchableOpacity
+                    style={styles.captureButton}
+                    onPress={captureFace}
+                    disabled={isLoading}
+                >
+                    <>
+                        <MaterialIcons name="photo-camera" size={24} color="white" />
+                        <Text style={styles.buttonText}>NEXT</Text>
+                    </>
+                </TouchableOpacity>
+            </View>
+
         </View>
     );
 }

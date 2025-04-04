@@ -15,7 +15,7 @@ const TransferSendOTP = ({ route }: any) => {
 
     const generateNumericOTP = useCallback(async (): Promise<string> => {
         try {
-            const timestamp = Math.floor(Date.now() / 30000);
+            const timestamp = Math.floor(Date.now() / 60000);
             const input = `${timestamp}-${secretKey}`;
 
             const digest = await Crypto.digestStringAsync(

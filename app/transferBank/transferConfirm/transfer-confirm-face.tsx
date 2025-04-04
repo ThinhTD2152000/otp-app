@@ -4,11 +4,11 @@ import { MaterialIcons, AntDesign } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import LoadingIndicator from '@/components/Loading';
 import { useNavigation } from '@react-navigation/native';
+import { post } from '@/fetch/apiClient';
 
 const { width } = Dimensions.get('window');
 
 export default function TransferConfirmFace({ route }: any) {
-    const [facePhoto, setFacePhoto] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
 
     const navigation = useNavigation()
@@ -33,13 +33,29 @@ export default function TransferConfirmFace({ route }: any) {
             });
 
             if (!result.canceled) {
-                setFacePhoto(result.assets[0].uri);
+                const newRes = await handleCreateSession()
+                if (newRes) {
+                    (navigation as any).replace('FaceTransferSuccess', { portrait: result.assets[0].uri, amount: amount });
+                }
             }
         } catch (error) {
             Alert.alert('Error', 'Cannot open the camera');
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const handleCreateSession = async () => {
+        try {
+            // Gọi API tạo session
+            const res = await post('kyc/create_session');
+            // Kiểm tra phản hồi từ API
+            return res?.data.access_token
+        } catch (error) {
+            // Xử lý lỗi khi gọi API
+            Alert.alert('Error', 'Please try again.');
+        }
+        return;
     };
 
     return (

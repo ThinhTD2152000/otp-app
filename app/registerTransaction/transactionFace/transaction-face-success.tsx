@@ -8,6 +8,8 @@ import * as ImageManipulator from "expo-image-manipulator";
 import { getMe } from '@/fetch/authAPI';
 
 const FaceTransactionRegisterSuccess = ({ route }: { route: { params: { portrait: any } } }) => {
+    const testImage = require('@/assets/images/ocr.jpeg')
+
     const [isLoading, setIsLoading] = useState<boolean>(true)
     const [data, setData] = useState<any>(null)
 
@@ -17,7 +19,8 @@ const FaceTransactionRegisterSuccess = ({ route }: { route: { params: { portrait
 
     const handleGetMe = async () => {
         try {
-            return await getMe()
+            const res = await getMe()
+            return res.image[0]
         } catch (error) {
             throw error
         }
@@ -45,8 +48,9 @@ const FaceTransactionRegisterSuccess = ({ route }: { route: { params: { portrait
 
             // Tạo FormData
             const formData: any = new FormData();
-            formData.append('portrait', {
+            formData.append('portrait_image', {
                 uri: resizedImage.uri,
+                // uri: Image.resolveAssetSource(testImage).uri,
                 type: 'image/jpeg', // Định dạng ảnh
                 name: 'ocr.jpeg', // Tên file
             });
@@ -55,7 +59,7 @@ const FaceTransactionRegisterSuccess = ({ route }: { route: { params: { portrait
 
             // Gửi request lên server
             const res = await post(
-                'kyc/open-face-v2',
+                'kyc/open-compare-face',
                 formData,
                 {
                     'Content-Type': 'multipart/form-data',
@@ -64,11 +68,6 @@ const FaceTransactionRegisterSuccess = ({ route }: { route: { params: { portrait
             );
             setData(res);
 
-            const newRes: any = {}
-            newRes.remoteResponse = {
-                response_code: 200
-            }
-            setData(newRes);
         } catch (error) {
             throw error
         } finally {
@@ -80,9 +79,9 @@ const FaceTransactionRegisterSuccess = ({ route }: { route: { params: { portrait
     useEffect(() => {
         const initialize = async () => {
             try {
-                const userId = await handleGetMe(); // Lấy id từ handleGetMe
-                if (userId) {
-                    await handleCompare(userId); // Truyền id vào handleUpdatePayment
+                const imageOcr = await handleGetMe(); // Lấy id từ handleGetMe
+                if (imageOcr) {
+                    await handleCompare(imageOcr); // Truyền id vào handleUpdatePayment
                 }
             } catch (error) {
             }

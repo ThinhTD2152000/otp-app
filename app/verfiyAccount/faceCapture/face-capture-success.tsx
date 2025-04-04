@@ -100,7 +100,7 @@ const FaceCaptureSuccess = ({ route }: { route: { params: { portrait_image: any,
                         </TouchableOpacity>
                     </View> : <View style={styles.container_error}>
                         {/* Tiêu đề màu đỏ */}
-                        <Text style={styles.errorTitle_error}>OCR Failed</Text>
+                        <Text style={styles.errorTitle_error}>Failed</Text>
 
                         {/* Hình ảnh thất bại */}
                         <Image
@@ -111,7 +111,7 @@ const FaceCaptureSuccess = ({ route }: { route: { params: { portrait_image: any,
 
                         {/* Thông báo lỗi */}
                         <Text style={styles.errorMessage_error}>
-                            Unable to recognize information from the image. Please try again with a clearer image.
+                            Please try again with a clearer image.
                         </Text>
 
                         {/* Nút quay lại màu xanh */}

@@ -24,28 +24,32 @@ const TransferBankConfirm = ({ route }: {
     const [isConfirming, setIsConfirming] = useState(false);
     const [isLoading, setIsLoading] = useState<Boolean>(true)
     const [senderInfo, setSenderInfo] = useState<any>(null); //
-    const [mePayment, setMePayment] = useState<any[]>([]); //
+    const [mePayment, setMePayment] = useState<any>([]); //
 
     const handleGetMe = async () => {
+        setMePayment([])
         try {
             const res = await getMe()
 
             setSenderInfo({
                 name: res?.personalInformation?.name_eng,
-                account: '1234mePayment567890', // hoặc thông tin khác nếu có
+                account: '123456789', // hoặc thông tin khác nếu có
                 balance: res?.balance || 0,
                 bank: 'Vietcombank', // Thay thế bằng thông tin thực tế nếu có
             });
 
+            const newData = []
+
             if (res.isOpenFace) {
-                setMePayment(['face'])
+                newData.push('face')
             } else {
                 setPaymentMethod('otp')
             }
 
             if (res.isOpenOTP) {
-                setMePayment([...mePayment, 'otp'])
+                newData.push('otp')
             }
+            setMePayment(newData)
 
 
         } catch (error) {

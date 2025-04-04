@@ -26,6 +26,7 @@ import FaceCaptureV2Screen from '@/app/verfiyAccount/faceCapture/face-capture-v2
 import IDCardResultV2Screen from '@/app/verfiyAccount/ipCapture/id-result-v2';
 import FaceCaptureV2Success from '@/app/verfiyAccount/faceCapture/face-capture-success-v2';
 import FaceTransferSuccess from '@/app/transferBank/transferConfirm/transer-compare-face';
+import TransferSuccessScreen from '@/app/transferBank/transfer-success';
 
 const Stack = createNativeStackNavigator();
 
@@ -44,6 +45,7 @@ export default function AppNavigator() {
             <Stack.Screen name="TransactionRegister" component={TransactionMethodScreen} />
             <Stack.Screen name="SmartOtpRegister" component={PinVerificationScreen} />
             <Stack.Screen name="SuccessTransaction" component={TransactionSuccessScreen} />
+            <Stack.Screen name="TransferSuccessScreen" component={TransferSuccessScreen} />
             <Stack.Screen name="Default" component={AuthScreen} />
             <Stack.Screen name="RegisterAccount" component={RegisterAccountScreen} />
             <Stack.Screen name="IdCardResult" component={IDCardResultScreen} />

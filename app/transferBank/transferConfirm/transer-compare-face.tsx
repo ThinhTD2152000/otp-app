@@ -5,9 +5,10 @@ import LoadingIndicator from '@/components/Loading';
 import { post } from '@/fetch/apiClient';
 import * as FileSystem from "expo-file-system";
 import * as ImageManipulator from "expo-image-manipulator";
-import { getMe } from '@/fetch/authAPI';
 
 const FaceTransferSuccess = ({ route }: { route: { params: { portrait: any, amount: any } } }) => {
+    // const testImage = require('@/assets/images/ocr.jpeg')
+
     const [isLoading, setIsLoading] = useState<boolean>(true)
     const [data, setData] = useState<any>(null)
 
@@ -15,15 +16,7 @@ const FaceTransferSuccess = ({ route }: { route: { params: { portrait: any, amou
 
     const navigation = useNavigation();
 
-    const handleGetMe = async () => {
-        try {
-            return await getMe()
-        } catch (error) {
-            throw error
-        }
-    }
-
-    const handleCompare = async (imageOcr: any) => {
+    const handleCompare = async () => {
         try {
 
             if (!portrait) {
@@ -47,6 +40,7 @@ const FaceTransferSuccess = ({ route }: { route: { params: { portrait: any, amou
             const formData: any = new FormData();
             formData.append('portrait_1', {
                 uri: resizedImage.uri,
+                // uri: Image.resolveAssetSource(testImage).uri,
                 type: 'image/jpeg', // Định dạng ảnh
                 name: 'ocr.jpeg', // Tên file
             });
@@ -55,7 +49,7 @@ const FaceTransferSuccess = ({ route }: { route: { params: { portrait: any, amou
 
             // Gửi request lên server
             const res = await post(
-                'kyc/withdraw',
+                'withdraw',
                 formData,
                 {
                     'Content-Type': 'multipart/form-data',
@@ -65,6 +59,7 @@ const FaceTransferSuccess = ({ route }: { route: { params: { portrait: any, amou
             setData(res);
 
         } catch (error) {
+            console.log('err', error)
             throw error
         } finally {
             setIsLoading(false);
@@ -75,10 +70,7 @@ const FaceTransferSuccess = ({ route }: { route: { params: { portrait: any, amou
     useEffect(() => {
         const initialize = async () => {
             try {
-                const userId = await handleGetMe(); // Lấy id từ handleGetMe
-                if (userId) {
-                    await handleCompare(userId); // Truyền id vào handleUpdatePayment
-                }
+                await handleCompare(); // Truyền id vào handleUpdatePayment
             } catch (error) {
                 throw error
             }
@@ -109,7 +101,7 @@ const FaceTransferSuccess = ({ route }: { route: { params: { portrait: any, amou
                         {/* Nút tiếp tục */}
                         <TouchableOpacity
                             style={styles.continueButton}
-                            onPress={() => (navigation as any).replace('Home')} // Thay bằng màn hình tiếp theo
+                            onPress={() => (navigation as any).replace('TransferSuccessScreen')} // Thay bằng màn hình tiếp theo
                         >
                             <Text style={styles.buttonText}>HOME</Text>
                         </TouchableOpacity>
@@ -126,7 +118,7 @@ const FaceTransferSuccess = ({ route }: { route: { params: { portrait: any, amou
 
                         {/* Thông báo lỗi */}
                         <Text style={styles.errorMessage_error}>
-                            Unable to recognize information from the image. Please try again with a clearer image.
+                            Please try again with a clearer image.
                         </Text>
 
                         {/* Nút quay lại màu xanh */}

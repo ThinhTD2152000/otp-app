@@ -58,7 +58,7 @@ const TransferConfirmOTP = ({ route }: any) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>XÁC THỰC MÃ PIN</Text>
+            <Text style={styles.title}>VERIFY PIN</Text>
 
             {renderDots()}
 

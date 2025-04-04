@@ -100,7 +100,7 @@ const PinVerificationScreen = () => {
                 >
                     <View style={styles.buttonContent}>
                         <AntDesign name="arrowleft" size={20} color="#007AFF" />
-                        <Text style={styles.backText}>Quay lại</Text>
+                        <Text style={styles.backText}>Back</Text>
                     </View>
                 </TouchableOpacity>
 
@@ -116,7 +116,7 @@ const PinVerificationScreen = () => {
                         {loading ? (
                             <ActivityIndicator color="white" />
                         ) : (
-                            <Text style={styles.verifyText}>XÁC THỰC</Text>
+                            <Text style={styles.verifyText}>Confirm</Text>
                         )}
                     </View>
                 </TouchableOpacity>

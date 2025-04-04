@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Modal } from 'react-native';
 
+
 const TransferBankConfirm = ({ route }: {
     route: {
         params: {
@@ -23,6 +24,7 @@ const TransferBankConfirm = ({ route }: {
     const [isConfirming, setIsConfirming] = useState(false);
     const [isLoading, setIsLoading] = useState<Boolean>(true)
     const [senderInfo, setSenderInfo] = useState<any>(null); //
+    const [mePayment, setMePayment] = useState<any[]>([]); //
 
     const handleGetMe = async () => {
         try {
@@ -30,10 +32,21 @@ const TransferBankConfirm = ({ route }: {
 
             setSenderInfo({
                 name: res?.personalInformation?.name_eng,
-                account: '1234567890', // hoặc thông tin khác nếu có
+                account: '1234mePayment567890', // hoặc thông tin khác nếu có
                 balance: res?.balance || 0,
                 bank: 'Vietcombank', // Thay thế bằng thông tin thực tế nếu có
             });
+
+            if (res.isOpenFace) {
+                setMePayment(['face'])
+            } else {
+                setPaymentMethod('otp')
+            }
+
+            if (res.isOpenOTP) {
+                setMePayment([...mePayment, 'otp'])
+            }
+
 
         } catch (error) {
             Alert
@@ -165,26 +178,29 @@ const TransferBankConfirm = ({ route }: {
                         <View style={styles.paymentMethodModalContainer}>
                             <Text style={styles.paymentMethodModalTitle}>Select Payment Method</Text>
                             {/* Option Khuôn mặt */}
-                            <TouchableOpacity
-                                style={styles.paymentOption}
-                                onPress={() => setPaymentMethod('face')}
-                            >
-                                <View style={styles.radioButton}>
-                                    {paymentMethod === 'face' && <View style={styles.radioButtonSelected} />}
-                                </View>
-                                <Text style={styles.paymentOptionText}>Face Authentication</Text>
-                            </TouchableOpacity>
+                            {mePayment.includes('face') &&
+                                <TouchableOpacity
+                                    style={styles.paymentOption}
+                                    onPress={() => setPaymentMethod('face')}
+                                >
+                                    <View style={styles.radioButton}>
+                                        {paymentMethod === 'face' && <View style={styles.radioButtonSelected} />}
+                                    </View>
+                                    <Text style={styles.paymentOptionText}>Face Authentication</Text>
+                                </TouchableOpacity>}
 
                             {/* Option Smart OTP */}
-                            <TouchableOpacity
-                                style={styles.paymentOption}
-                                onPress={() => setPaymentMethod('otp')}
-                            >
-                                <View style={styles.radioButton}>
-                                    {paymentMethod === 'otp' && <View style={styles.radioButtonSelected} />}
-                                </View>
-                                <Text style={styles.paymentOptionText}>Smart OTP</Text>
-                            </TouchableOpacity>
+
+                            {mePayment.includes('otp') &&
+                                <TouchableOpacity
+                                    style={styles.paymentOption}
+                                    onPress={() => setPaymentMethod('otp')}
+                                >
+                                    <View style={styles.radioButton}>
+                                        {paymentMethod === 'otp' && <View style={styles.radioButtonSelected} />}
+                                    </View>
+                                    <Text style={styles.paymentOptionText}>Smart OTP</Text>
+                                </TouchableOpacity>}
 
                             <TouchableOpacity
                                 style={styles.confirmPaymentMethodButton}
@@ -194,11 +210,6 @@ const TransferBankConfirm = ({ route }: {
                             </TouchableOpacity>
                         </View>
                     </View>
-                </Modal>
-
-                {/* Modal loading (giữ nguyên) */}
-                <Modal visible={isConfirming} transparent>
-                    {/* ... (giữ nguyên phần loading) */}
                 </Modal>
             </View>)
     );
@@ -272,7 +283,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     confirmButton: {
-        backgroundColor: '#3498db',
+        backgroundColor: '#007AFF',
         padding: 16,
         borderRadius: 8,
         alignItems: 'center',

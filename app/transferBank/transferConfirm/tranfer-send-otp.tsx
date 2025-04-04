@@ -13,8 +13,6 @@ const TransferSendOTP = ({ route }: any) => {
 
     const { amount, secretKey } = route.params
 
-    console.log(secretKey)
-
     const generateNumericOTP = useCallback(async (): Promise<string> => {
         try {
             const timestamp = Math.floor(Date.now() / 30000);
@@ -41,7 +39,7 @@ const TransferSendOTP = ({ route }: any) => {
             setOtp(newOtp);
             setError(null);
         } catch (err) {
-            setError('Không thể tạo OTP. Vui lòng thử lại.');
+            setError('Not created pin!');
             console.error('OTP generation failed:', err);
         } finally {
             setIsLoading(false);
@@ -56,34 +54,22 @@ const TransferSendOTP = ({ route }: any) => {
             setIsLoading(true);
             const res = await post('otp/verify-otp', {
                 otp: otp,
-                secretKey: secretKey
+                secretKey: secretKey,
+                money: Number(amount)
             });
 
-            console.log('Verification response:', res);
             (navigation as any).replace('SuccessTransaction');
         } catch (error) {
             console.error('Error verifying OTP:', error);
-            setError('Xác thực thất bại. Vui lòng thử lại.');
+            setError('Verify failed.');
         } finally {
             setIsLoading(false);
         }
     };
 
-    const handelResOTP = async () => {
-        try {
-            const res = await post('otp/generate-otp', { secretKey: secretKey });
-            console.log(res)
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
     // Effect cho countdown và tự động cập nhật OTP
     useEffect(() => {
         updateOTP(); // Tạo OTP lần đầu
-        handelResOTP()
-        console.log('OTP:', otp);
-
     }, []);
 
     return (

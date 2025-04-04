@@ -19,7 +19,6 @@ export default function LoginScreen() {
         const newData = { username, password }
 
         setLoading(true);
-        console.log("call")
         try {
             const res: any = await login(newData);
 
